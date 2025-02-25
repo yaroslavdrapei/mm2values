@@ -12,7 +12,7 @@ export class HtmlScraper implements IDataFetcher {
     const data = document.querySelectorAll('.footertext')[0]?.textContent;
 
     if (!data) {
-      throw new Error('No data found, check the source and the html structure');
+      throw new Error('Failed to make a jsdom query');
     }
 
     return this.prettifyData(data);

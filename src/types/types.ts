@@ -7,9 +7,13 @@ export type CommandJson = {
 export interface ISubscriber {
   readonly chatId: number;
   username?: string;
-  notify(data: string): void;
 }
 
 export interface IDataFetcher {
   getData(): Promise<string>;
 }
+
+export type DbSchema = {
+  data: string;
+  subscribers: string;
+};
