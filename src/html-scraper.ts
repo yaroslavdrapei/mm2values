@@ -1,6 +1,7 @@
 import { JSDOM } from 'jsdom';
+import { IDataFetcher } from './types/types';
 
-export class HtmlScraper {
+export class HtmlScraper implements IDataFetcher {
   public constructor(private readonly url: string) {}
 
   public async getData(): Promise<string> {
@@ -18,9 +19,7 @@ export class HtmlScraper {
   }
 
   private prettifyData(data: string): string {
-    console.log('Raw data:\n', data);
     const rows = data.split('\n');
-    console.log('Rows:\n', rows);
 
     for (let i = 0; i < rows.length; i++) {
       if (rows[i] == 'N/A') {

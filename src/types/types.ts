@@ -3,3 +3,13 @@ export type CommandJson = {
   subscribe: string;
   unsubscribe: string;
 };
+
+export interface ISubscriber {
+  readonly chatId: number;
+  username?: string;
+  notify(data: string): void;
+}
+
+export interface IDataFetcher {
+  getData(): Promise<string>;
+}

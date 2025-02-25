@@ -3,6 +3,9 @@ dotenv.config();
 import TelegramBot from 'node-telegram-bot-api';
 import { Commands } from './commands';
 import { HtmlScraper } from './html-scraper';
+import { ISubscriber } from './types/types';
+import { Subscriber } from './subscriber';
+import { Notifier } from './notifier';
 
 const token = process.env.BOT_TOKEN!;
 const url = process.env.SOURCE!;
@@ -11,7 +14,10 @@ const commands = Commands.getCommands();
 const bot = new TelegramBot(token, { polling: true });
 const htmlScraper = new HtmlScraper(url);
 
-const subscribers: number[] = [];
+const subscribers: ISubscriber[] = [];
+
+const notifier = new Notifier(htmlScraper, 5000);
+notifier.start(subscribers);
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -22,8 +28,9 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/subscribe/, (msg) => {
   const chatId = msg.chat.id;
 
-  if (!subscribers.includes(chatId)) {
-    subscribers.push(chatId);
+  if (!subscribers.find((sub) => sub.chatId === chatId)) {
+    const subscriber = new Subscriber(chatId, msg.chat.username!, bot.sendMessage.bind(bot, chatId));
+    subscribers.push(subscriber);
     bot.sendMessage(chatId, commands.subscribe);
     return;
   }
@@ -34,9 +41,9 @@ bot.onText(/\/subscribe/, (msg) => {
 bot.onText(/\/unsubscribe/, (msg) => {
   const chatId = msg.chat.id;
 
-  const index = subscribers.indexOf(chatId);
-  if (index > -1) {
-    subscribers.splice(index, 1);
+  const subscriber = subscribers.find((sub) => sub.chatId === chatId);
+  if (subscriber) {
+    subscribers.splice(subscribers.indexOf(subscriber), 1);
     bot.sendMessage(chatId, commands.unsubscribe);
     return;
   }
