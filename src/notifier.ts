@@ -33,7 +33,14 @@ export class Notifier {
   }
 
   private async notify(subscribersList: Subscriber[]): Promise<void> {
-    subscribersList.forEach((s) => this.notifyFunc(s.chatId, this.lastData));
+    subscribersList.forEach((s) => {
+      try {
+        this.notifyFunc(s.chatId, this.lastData);
+      } catch (e) {
+        console.log(`Cannot send message to ${s.username}; user has probably blocked the bot`);
+        console.error(e);
+      }
+    });
   }
 
   private async isDataUpdated(): Promise<boolean> {
