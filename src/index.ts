@@ -1,12 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import TelegramBot, { Message } from 'node-telegram-bot-api';
+import TelegramBot from 'node-telegram-bot-api';
 import { Commands } from './commands';
+import { HtmlScraper } from './html-scraper';
 
 const token = process.env.BOT_TOKEN!;
+const url = process.env.SOURCE!;
 const commands = Commands.getCommands();
 
 const bot = new TelegramBot(token, { polling: true });
+const htmlScraper = new HtmlScraper(url);
 
 const subscribers: number[] = [];
 
@@ -39,4 +42,16 @@ bot.onText(/\/unsubscribe/, (msg) => {
   }
 
   bot.sendMessage(chatId, 'You are already unsubscribed');
+});
+
+bot.onText(/\/log/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  try {
+    const data = await htmlScraper.getData();
+    bot.sendMessage(chatId, data);
+  } catch (error) {
+    console.error(error);
+    bot.sendMessage(chatId, 'Error occurred');
+  }
 });
