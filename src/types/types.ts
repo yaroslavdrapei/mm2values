@@ -10,10 +10,14 @@ export type DbSchema = {
   subscribers: string;
 };
 
-export interface ISubscriber {
+export type Subscriber = {
   readonly chatId: number;
-  username?: string;
-}
+  readonly username: string;
+};
+
+export const createSubscriber = (chatId: number, username: string): Subscriber => {
+  return { chatId, username };
+};
 
 export interface IDataFetcher {
   getData(): Promise<string>;

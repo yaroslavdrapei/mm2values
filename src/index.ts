@@ -3,8 +3,7 @@ dotenv.config();
 import TelegramBot from 'node-telegram-bot-api';
 import { Commands } from './commands';
 import { HtmlScraper } from './html-scraper';
-import { ISubscriber } from './types/types';
-import { Subscriber } from './subscriber';
+import { Subscriber, createSubscriber } from './types/types';
 import { Notifier } from './notifier';
 import { Db } from './db';
 
@@ -15,7 +14,7 @@ const commands = Commands.getCommands();
 
 const db = new Db();
 
-const subscribers: ISubscriber[] = db.getSubscribers();
+const subscribers: Subscriber[] = db.getSubscribers();
 
 const bot = new TelegramBot(token, { polling: true });
 const htmlScraper = new HtmlScraper(url);
@@ -32,15 +31,16 @@ bot.onText(/\/start/, (msg) => {
 
 bot.onText(/\/subscribe/, (msg) => {
   const chatId = msg.chat.id;
+  const username = msg.chat.username ?? 'Anonymous user';
 
   if (!subscribers.find((sub) => sub.chatId === chatId)) {
-    const subscriber = new Subscriber(chatId, msg.chat.username!);
+    const subscriber = createSubscriber(chatId, username);
     subscribers.push(subscriber);
     db.setSubscribers(subscribers);
     bot.sendMessage(chatId, commands.subscribe);
 
     if (isDevMode) {
-      bot.sendMessage(process.env.MY_CHAT_ID!, `Hello, ${msg.chat.username}`);
+      bot.sendMessage(process.env.MY_CHAT_ID!, `Hello, ${username}`);
     }
 
     return;

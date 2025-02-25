@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { DbSchema, ISubscriber } from './types/types';
+import { DbSchema, Subscriber } from './types/types';
 
 export class Db {
   private db = path.resolve('db.json');
@@ -15,7 +15,7 @@ export class Db {
     return data.data;
   }
 
-  public getSubscribers(): ISubscriber[] {
+  public getSubscribers(): Subscriber[] {
     const data: DbSchema = JSON.parse(fs.readFileSync(this.db, 'utf8'));
     return JSON.parse(data.subscribers);
   }
@@ -26,7 +26,7 @@ export class Db {
     fs.writeFileSync(this.db, JSON.stringify(db));
   }
 
-  public setSubscribers(subscribers: ISubscriber[]): void {
+  public setSubscribers(subscribers: Subscriber[]): void {
     const db: DbSchema = JSON.parse(fs.readFileSync(this.db, 'utf8'));
     db.subscribers = JSON.stringify(subscribers);
     fs.writeFileSync(this.db, JSON.stringify(db));

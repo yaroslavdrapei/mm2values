@@ -1,5 +1,5 @@
 import { Db } from './db';
-import { IDataFetcher, ISubscriber } from './types/types';
+import { IDataFetcher, Subscriber } from './types/types';
 
 type NotifyFunc = (chatId: number, data: string) => void;
 
@@ -15,7 +15,7 @@ export class Notifier {
     this.lastData = this.db.getData();
   }
 
-  public start(subs: ISubscriber[]): void {
+  public start(subs: Subscriber[]): void {
     if (!this.intervalId) {
       this.intervalId = setInterval(async () => {
         if (await this.isDataUpdated()) {
@@ -32,7 +32,7 @@ export class Notifier {
     if (this.intervalId) clearInterval(this.intervalId);
   }
 
-  private async notify(subscribersList: ISubscriber[]): Promise<void> {
+  private async notify(subscribersList: Subscriber[]): Promise<void> {
     subscribersList.forEach((s) => this.notifyFunc(s.chatId, this.lastData));
   }
 
