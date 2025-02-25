@@ -1,5 +1,6 @@
 {
   "start": "Welcome to the murder mystery value updates bot! It will send any updates in values based on mm2values.com website in a span of minutes! To get updated every time a change happens type /subscribe command",
   "subscribe": "You were successfully added to list of subscribers. To unsubscribe simply type /unsubscribe",
-  "unsubscribe": "You were successfully removed from list of subscribers"
+  "unsubscribe": "You were successfully removed from list of subscribers",
+  "help": "/start - introduction to bot\n/subscribe - subscribe to the updates\n/unsubscribe - unsubscribe from the updates\n/log - get the last update\n/status - check if you are subscribed\n/help - check every command's description"
 }

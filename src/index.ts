@@ -19,12 +19,13 @@ const subscribers: ISubscriber[] = db.getSubscribers();
 const bot = new TelegramBot(token, { polling: true });
 const htmlScraper = new HtmlScraper(url);
 
-const notifier = new Notifier(htmlScraper, 60000 * 2, bot.sendMessage.bind(bot), db);
+const frequency = 1000 * 60 * 5; // 5 minutes
+
+const notifier = new Notifier(htmlScraper, frequency, bot.sendMessage.bind(bot), db);
 notifier.start(subscribers);
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-
   bot.sendMessage(chatId, commands.start);
 });
 
@@ -66,4 +67,21 @@ bot.onText(/\/log/, (msg) => {
     console.error(error);
     bot.sendMessage(chatId, 'Error occurred. Try again later');
   }
+});
+
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, commands.help);
+});
+
+bot.onText(/\/status/, (msg) => {
+  const chatId = msg.chat.id;
+
+  const subscriber = subscribers.find((sub) => sub.chatId === chatId);
+  if (subscriber) {
+    bot.sendMessage(chatId, 'You are subscribed');
+    return;
+  }
+
+  bot.sendMessage(chatId, 'You are not subscribed');
 });
