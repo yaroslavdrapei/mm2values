@@ -8,6 +8,7 @@ import { Subscriber } from './subscriber';
 import { Notifier } from './notifier';
 import { Db } from './db';
 
+const isDevMode = process.env.DEV === 'true';
 const token = process.env.BOT_TOKEN!;
 const url = process.env.SOURCE!;
 const commands = Commands.getCommands();
@@ -37,6 +38,11 @@ bot.onText(/\/subscribe/, (msg) => {
     subscribers.push(subscriber);
     db.setSubscribers(subscribers);
     bot.sendMessage(chatId, commands.subscribe);
+
+    if (isDevMode) {
+      bot.sendMessage(process.env.MY_CHAT_ID!, `Hello, ${msg.chat.username}`);
+    }
+
     return;
   }
 
@@ -51,6 +57,11 @@ bot.onText(/\/unsubscribe/, (msg) => {
     subscribers.splice(subscribers.indexOf(subscriber), 1);
     db.setSubscribers(subscribers);
     bot.sendMessage(chatId, commands.unsubscribe);
+
+    if (isDevMode) {
+      bot.sendMessage(process.env.MY_CHAT_ID!, `Bye, ${msg.chat.username}`);
+    }
+
     return;
   }
 
