@@ -17,14 +17,7 @@ export class Notifier {
 
   public start(subs: Subscriber[]): void {
     if (!this.intervalId) {
-      this.intervalId = setInterval(async () => {
-        if (await this.isDataUpdated()) {
-          this.notify(subs);
-          console.log('Data updated', new Date().toString());
-          return;
-        }
-        console.log('Data not updated', new Date().toString());
-      }, this.frequency);
+      this.intervalId = setInterval(() => this.init(subs), this.frequency);
     }
   }
 
@@ -51,15 +44,31 @@ export class Notifier {
     } catch (e) {
       console.log('Caught an error while fetching data:');
       console.error(e);
-      data = this.db.getData();
+      data = this.db.getData(); // get the last data stored in the db
     }
 
     if (data !== this.lastData) {
-      this.lastData = data;
-      this.db.setData(data);
+      this.updateData(data);
       return true;
     }
 
     return false;
+  }
+
+  private async updateData(data: string): Promise<void> {
+    this.lastData = data;
+    this.db.setData(data);
+  }
+
+  private async init(subs: Subscriber[]): Promise<void> {
+    const wasDataUpdated = await this.isDataUpdated();
+
+    if (wasDataUpdated) {
+      this.notify(subs);
+
+      console.log('Data updated', new Date().toString());
+      return;
+    }
+    console.log('Data not updated', new Date().toString());
   }
 }
