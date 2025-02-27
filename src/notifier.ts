@@ -6,7 +6,17 @@ type NotifyFunc = (chatId: number, data: string) => void;
 
 export class Notifier {
   private intervalId: NodeJS.Timeout | null = null;
-  public constructor(private dataFetcher: IDataFetcher, private frequency: number, private notifyFunc: NotifyFunc) {}
+  public constructor(private dataFetcher: IDataFetcher, private frequency: number, private notifyFunc: NotifyFunc) {
+    // if data collection is empty fill it with initial value
+    Data.findOne().then((data) => {
+      if (!data) {
+        Data.create({ data: 'init value' }).then(() => this.start());
+        return;
+      }
+
+      this.start();
+    });
+  }
 
   public async start(): Promise<void> {
     if (!this.intervalId) {
