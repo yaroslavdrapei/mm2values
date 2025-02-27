@@ -5,19 +5,10 @@ export type CommandJson = {
   help: string;
 };
 
-export type DbSchema = {
-  data: string;
-  subscribers: string;
-};
-
-export type Subscriber = {
+export interface ISubscriber {
   readonly chatId: number;
-  readonly username: string;
-};
-
-export const createSubscriber = (chatId: number, username: string): Subscriber => {
-  return { chatId, username };
-};
+  readonly username?: string;
+}
 
 export interface IDataFetcher {
   getData(): Promise<string>;
