@@ -1,23 +1,26 @@
-import { Db } from './db';
-import { IDataFetcher, Subscriber } from './types/types';
+import { Data } from './schemas/Data';
+import { Subscriber } from './schemas/Subscriber';
+import { IDataFetcher } from './types/types';
 
 type NotifyFunc = (chatId: number, data: string) => void;
 
 export class Notifier {
   private intervalId: NodeJS.Timeout | null = null;
-  private lastData: string = '';
-  public constructor(
-    private dataFetcher: IDataFetcher,
-    private frequency: number,
-    private notifyFunc: NotifyFunc,
-    private db: Db
-  ) {
-    this.lastData = this.db.getData();
+  public constructor(private dataFetcher: IDataFetcher, private frequency: number, private notifyFunc: NotifyFunc) {
+    // if data collection is empty fill it with initial value
+    Data.findOne().then((data) => {
+      if (!data) {
+        Data.create({ data: 'init value' }).then(() => this.start());
+        return;
+      }
+
+      this.start();
+    });
   }
 
-  public start(subs: Subscriber[]): void {
+  public async start(): Promise<void> {
     if (!this.intervalId) {
-      this.intervalId = setInterval(() => this.init(subs), this.frequency);
+      this.intervalId = setInterval(() => this.init(), this.frequency);
     }
   }
 
@@ -25,10 +28,12 @@ export class Notifier {
     if (this.intervalId) clearInterval(this.intervalId);
   }
 
-  private async notify(subscribersList: Subscriber[]): Promise<void> {
-    subscribersList.forEach((s) => {
+  private async notify(): Promise<void> {
+    const subscribers = await Subscriber.find();
+    subscribers.forEach(async (s) => {
       try {
-        this.notifyFunc(s.chatId, this.lastData);
+        const data = (await Data.findOne())!.data;
+        this.notifyFunc(s.chatId, data);
       } catch (e) {
         console.log(`Cannot send message to ${s.username}; user has probably blocked the bot`);
         console.error(e);
@@ -37,18 +42,20 @@ export class Notifier {
   }
 
   private async isDataUpdated(): Promise<boolean> {
-    let data: string = '';
+    let newData: string = '';
+    let lastData: string = '';
 
     try {
-      data = await this.dataFetcher.getData();
+      newData = await this.dataFetcher.getData();
+      lastData = (await Data.findOne())!.data;
     } catch (e) {
       console.log('Caught an error while fetching data:');
       console.error(e);
-      data = this.db.getData(); // get the last data stored in the db
+      return false;
     }
 
-    if (data !== this.lastData) {
-      this.updateData(data);
+    if (newData !== lastData) {
+      await this.updateData(newData);
       return true;
     }
 
@@ -56,19 +63,20 @@ export class Notifier {
   }
 
   private async updateData(data: string): Promise<void> {
-    this.lastData = data;
-    this.db.setData(data);
+    const dbData = (await Data.findOne())!;
+    dbData.data = data;
+    dbData.save();
   }
 
-  private async init(subs: Subscriber[]): Promise<void> {
+  private async init(): Promise<void> {
     const wasDataUpdated = await this.isDataUpdated();
 
     if (wasDataUpdated) {
-      this.notify(subs);
+      this.notify();
 
-      console.log('Data updated', new Date().toString());
+      console.log('Data updated', ...new Date().toString().split(' ').slice(0, 5));
       return;
     }
-    console.log('Data not updated', new Date().toString());
+    console.log('Data not updated', ...new Date().toString().split(' ').slice(0, 5));
   }
 }
