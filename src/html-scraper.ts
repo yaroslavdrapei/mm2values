@@ -1,7 +1,24 @@
 import { JSDOM } from 'jsdom';
-import { IDataFetcher } from './types/types';
+import { DefaultObject, IDataFetcher, IItem, isIItem } from './types/types';
 
 export class HtmlScraper implements IDataFetcher {
+  private baseUrl: string = process.env.BASE_SOURCE!;
+  public itemCount: number = 0; // just statistics
+  private pages: string[] = [
+    'misc',
+    'sets',
+    'uniques',
+    'pets',
+    'ancients',
+    'vintages',
+    'chromas',
+    'godlies',
+    'legendaries',
+    'rares',
+    'uncommons',
+    'commons'
+  ];
+
   public constructor(private readonly url: string) {}
 
   public async getData(): Promise<string> {
@@ -17,6 +34,122 @@ export class HtmlScraper implements IDataFetcher {
 
     return this.prettifyData(data);
   }
+
+  public async getItems(): Promise<IItem[]> {
+    const promises: Promise<IItem[]>[] = [];
+
+    for (const page of this.pages) {
+      promises.push(this.getItemsFromPage(page));
+    }
+
+    try {
+      const items = (await Promise.all(promises)).flat();
+      console.log(`Total potential items: ${this.itemCount}`);
+      console.log(`Total valid items: ${items.length}`);
+      return items;
+    } catch (e) {
+      console.log(`Error while trying to get items`);
+      throw e;
+    }
+  }
+
+  public async getItemsFromPage(page: string): Promise<IItem[]> {
+    const url = `${this.baseUrl}/${page}.html`;
+
+    const response = await fetch(url);
+    const html = await response.text();
+
+    const document = new JSDOM(html).window.document;
+    const items = document.querySelectorAll('.itemcolumn');
+
+    if (!items) {
+      throw new Error('Failed to make a jsdom query');
+    }
+
+    this.itemCount += items.length;
+
+    const result: IItem[] = [];
+
+    items.forEach((potentialItem) => {
+      const otherProps = this.getOtherProps(potentialItem);
+      const demandAndRarity = this.getDemandRarity(potentialItem);
+
+      if (!(otherProps && demandAndRarity)) return;
+
+      const item = { ...otherProps, ...demandAndRarity };
+
+      if (isIItem(item)) {
+        result.push(item);
+      }
+    });
+
+    console.log(`Total on ${page}: ${items.length}`);
+    console.log(`Valid on ${page}: ${result.length}`);
+
+    return result;
+  }
+
+  private getOtherProps(elem: Element): DefaultObject | null {
+    const result: DefaultObject = {};
+    const matrixOfItems: string[][] = elem
+      .textContent!.split('\n')
+      .map((x) => x.trim())
+      .filter((y) => y != '')
+      .map((z) => z.split(' - '));
+
+    matrixOfItems.forEach((potentialItem) => {
+      if (potentialItem.length == 1) {
+        result['name'] = potentialItem[0];
+        return;
+      }
+
+      if (potentialItem[0].toLowerCase() == 'ranged value') {
+        result['ranged value'] = potentialItem[1] + potentialItem[2];
+      }
+
+      if (potentialItem.length == 3) return;
+
+      if (potentialItem[0].toLowerCase() == 'value') {
+        const particles = potentialItem[1].split(' ');
+        if (!isNaN(parseInt(particles[0]))) {
+          result['value'] = particles[0];
+          return;
+        }
+        result['value'] = potentialItem[1];
+      }
+
+      result[potentialItem[0].toLowerCase()] = potentialItem[1];
+    });
+
+    return result;
+  }
+
+  private getDemandRarity(elem: Element): { demand: string; rarity: string } | null {
+    const sep = elem.querySelector('sep');
+
+    if (!sep || !sep.previousElementSibling) return null;
+    return {
+      demand: sep.previousElementSibling.textContent!,
+      rarity: sep.childNodes[1].textContent!
+    };
+  }
+
+  // private tryGetTextContentBySelector(elem: Element, selector: string): string | null {
+  //   const text = elem.querySelector(selector)?.textContent;
+
+  //   // const name = this.tryGetTextContentBySelector(item, '.itemhead');
+  //   // const value = this.tryGetTextContentBySelector(item, '.itemvalue');
+  //   // const stability = this.tryGetTextContentBySelector(item, '.itemstability');
+  //   // const origin = this.tryGetTextContentBySelector(item, '.itemorigin');
+  //   // const rangedValue = this.tryGetTextContentBySelector(item, '.itemrange');
+
+  //   // console.log(
+  //   //   `Name: ${name}; value: ${value}; stability: ${stability}, origin: ${origin}, ranged value: ${rangedValue}`
+  //   // );
+
+  //   if (!text) return null;
+  //   return text;
+  // }
 
   private prettifyData(data: string): string {
     const rows = data.split('\n');
