@@ -1,6 +1,7 @@
 import { Data } from './schemas/Data';
 import { Subscriber } from './schemas/Subscriber';
 import { IDataFetcher } from './types/types';
+import { updateItems } from './updateItems';
 
 type NotifyFunc = (chatId: number, data: string) => void;
 
@@ -56,6 +57,7 @@ export class Notifier {
 
     if (newData !== lastData) {
       await this.updateData(newData);
+      await updateItems();
       return true;
     }
 

@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package.json /app
 COPY commands.json /app
-COPY db.json /app
 COPY tsconfig.json /app
 COPY .env /app
 
