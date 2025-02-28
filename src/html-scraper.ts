@@ -104,7 +104,7 @@ export class HtmlScraper implements IDataFetcher {
       }
 
       if (potentialItem[0].toLowerCase() == 'ranged value') {
-        result['ranged value'] = potentialItem[1] + potentialItem[2];
+        result['ranged value'] = `${potentialItem[1]} - ${potentialItem[2]}`;
       }
 
       if (potentialItem.length == 3) return;
@@ -130,7 +130,7 @@ export class HtmlScraper implements IDataFetcher {
     if (!sep || !sep.previousElementSibling) return null;
     return {
       demand: sep.previousElementSibling.textContent!,
-      rarity: sep.childNodes[1].textContent!
+      rarity: sep.childNodes[1].textContent! || sep.childNodes[0].textContent!.split(' - ')[1]
     };
   }
 
