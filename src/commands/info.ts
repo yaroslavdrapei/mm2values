@@ -14,7 +14,7 @@ export const infoCommand = async (bot: TelegramBot, msg: Message): Promise<void>
     const messageArr: string[] = [];
     items.forEach((item) => messageArr.push(itemToText(item)));
 
-    bot.sendMessage(chatId, messageArr.join('\n\n'));
+    bot.sendMessage(chatId, messageArr.join('\n\n'), { parse_mode: 'HTML' });
     return;
   }
 

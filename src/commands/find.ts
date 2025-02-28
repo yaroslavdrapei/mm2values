@@ -17,7 +17,9 @@ export const findCommand = async (bot: TelegramBot, msg: Message): Promise<void>
 
     const totalItemsMsg = `Total items found: ${Math.min(items.length, maxItemsDisplayed)}`;
 
-    bot.sendMessage(chatId, messageArr.slice(0, maxItemsDisplayed).join('\n\n') + '\n\n' + totalItemsMsg);
+    bot.sendMessage(chatId, messageArr.slice(0, maxItemsDisplayed).join('\n\n') + '\n\n' + totalItemsMsg, {
+      parse_mode: 'HTML'
+    });
     return;
   }
 

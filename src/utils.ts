@@ -14,11 +14,11 @@ export const itemToText = (item: IItem): string => {
   const smth = (item as any)._doc;
 
   const information = Object.entries(smth)
-    .filter((pair) => pair[0][0] != '_' || pair[0] == 'name')
-    .map((pair) => `${pair[0][0].toUpperCase()}${pair[0].slice(1)}: ${pair[1]}`)
+    .filter((pair) => pair[0][0] != '_' && pair[0] != 'name')
+    .map((pair) => `${pair[0][0].toUpperCase()}${pair[0].slice(1)}: <b>${pair[1]}</b>`)
     .join('\n');
 
-  return `${capitalize(item.name)}\n${information}`;
+  return `<b><u>${capitalize(item.name)}</u></b>\n${information}`;
 };
 
 export const removeCommandForMessage = (str: string): string => {
