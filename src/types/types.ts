@@ -41,7 +41,6 @@ export function isIItem(obj: any): obj is IItem {
     typeof obj.stability === 'string' &&
     typeof obj.demand === 'string' &&
     typeof obj.rarity === 'string' &&
-    // typeof obj.origin === 'string' &&
     (obj.origin === undefined || typeof obj.origin === 'string') &&
     (obj.rangedValue === undefined || typeof obj.rangedValue === 'string') &&
     (obj.lastChangeInValue === undefined || typeof obj.lastChangeInValue === 'string') &&

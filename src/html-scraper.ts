@@ -134,23 +134,6 @@ export class HtmlScraper implements IDataFetcher {
     };
   }
 
-  // private tryGetTextContentBySelector(elem: Element, selector: string): string | null {
-  //   const text = elem.querySelector(selector)?.textContent;
-
-  //   // const name = this.tryGetTextContentBySelector(item, '.itemhead');
-  //   // const value = this.tryGetTextContentBySelector(item, '.itemvalue');
-  //   // const stability = this.tryGetTextContentBySelector(item, '.itemstability');
-  //   // const origin = this.tryGetTextContentBySelector(item, '.itemorigin');
-  //   // const rangedValue = this.tryGetTextContentBySelector(item, '.itemrange');
-
-  //   // console.log(
-  //   //   `Name: ${name}; value: ${value}; stability: ${stability}, origin: ${origin}, ranged value: ${rangedValue}`
-  //   // );
-
-  //   if (!text) return null;
-  //   return text;
-  // }
-
   private prettifyData(data: string): string {
     const rows = data.split('\n');
 
