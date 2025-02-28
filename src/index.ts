@@ -12,6 +12,7 @@ import { logCommand } from './commands/log';
 import { helpCommand } from './commands/help';
 import { statusCommand } from './commands/status';
 import { infoCommand } from './commands/info';
+import { findCommand } from './commands/find';
 
 mongoose.connect(process.env.MONGO_URI!);
 
@@ -33,3 +34,4 @@ bot.onText(/\/log/, (msg) => logCommand(bot, msg));
 bot.onText(/\/help/, (msg) => helpCommand(bot, msg, commands.help));
 bot.onText(/\/status/, (msg) => statusCommand(bot, msg));
 bot.onText(/\/info/, (msg) => infoCommand(bot, msg));
+bot.onText(/\/find/, (msg) => findCommand(bot, msg));
