@@ -12,7 +12,7 @@ services:
     ports:
       - 27017:27017
     env_file:
-      - .env.dev
+      - ../.env.dev
     volumes:
       - mongo-data:/data/db
 
@@ -22,11 +22,11 @@ services:
     ports:
       - 5500:5500
     volumes:
-      - ./shared:/shared
-      - ./config:/config
-      - ./backend:/backend
+      - ../shared:/shared
+      - ../config:/config
+      - ../backend:/backend
     env_file:
-      - .env.dev
+      - ../.env.dev
     depends_on:
       - redis
       - mongodb
@@ -35,11 +35,11 @@ services:
     image: scraper-mm2:1.0
     command: npx tsnd --respawn --transpile-only --watch scraper scraper/index.ts
     volumes:
-      - ./shared:/shared
-      - ./config:/config
-      - ./scraper:/scraper
+      - ../shared:/shared
+      - ../config:/config
+      - ../scraper:/scraper
     env_file:
-      - .env.dev
+      - ../.env.dev
     depends_on:
       - redis
       - backend
@@ -48,11 +48,11 @@ services:
     image: bot-mm2:1.0
     command: npx tsnd --respawn --transpile-only --watch bot bot/index.ts
     volumes:
-      - ./shared:/shared
-      - ./config:/config
-      - ./bot:/bot
+      - ../shared:/shared
+      - ../config:/config
+      - ../bot:/bot
     env_file:
-      - .env.dev
+      - ../.env.dev
     depends_on:
       - redis
       - backend
