@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IItem as MyIItem } from '../types/types';
+import { IItem as MyIItem } from '../../shared/types/types';
 
 interface IItem extends mongoose.Document, MyIItem {}
 
@@ -21,6 +21,10 @@ const itemSchema = new mongoose.Schema<IItem>({
     required: true
   },
   rarity: {
+    type: String,
+    required: true
+  },
+  type: {
     type: String,
     required: true
   },

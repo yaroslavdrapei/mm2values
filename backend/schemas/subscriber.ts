@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ISubscriber as MyISubscriber } from '../types/types';
+import { ISubscriber as MyISubscriber } from '../../shared/types/types';
 
 interface ISubscriber extends mongoose.Document, MyISubscriber {}
 
