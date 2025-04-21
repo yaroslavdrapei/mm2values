@@ -9,6 +9,6 @@
     "sourceMap": true,
     "moduleResolution": "NodeNext",
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "shared/utils/utils.ts"],
   "exclude": ["node_modules"],
 }

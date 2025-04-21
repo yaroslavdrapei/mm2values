@@ -1,8 +1,7 @@
 import { JSDOM } from 'jsdom';
-import { DefaultObject, IDataFetcher, IItem, isIItem } from './types/types';
-
-export class HtmlScraper implements IDataFetcher {
-  private baseUrl: string = process.env.BASE_SOURCE!;
+import { IHtmlScraper, IItem, isIItem } from '../shared/types/types';
+export class HtmlScraper implements IHtmlScraper {
+  private baseUrl: string = process.env.BASE_URL!;
   public itemCount: number = 0; // just statistics
   private pages: string[] = [
     'misc',
@@ -19,23 +18,29 @@ export class HtmlScraper implements IDataFetcher {
     'commons'
   ];
 
-  public constructor(private readonly url: string) {}
+  public async getChangeLog(): Promise<string | null> {
+    let html: string;
 
-  public async getData(): Promise<string> {
-    const response = await fetch(this.url);
-    const html = await response.text();
+    try {
+      const response = await fetch(`${this.baseUrl}/index.html`);
+      html = await response.text();
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
 
     const document = new JSDOM(html).window.document;
     const data = document.querySelectorAll('.footertext')[0]?.textContent;
 
     if (!data) {
-      throw new Error('Failed to make a jsdom query');
+      console.log('Failed to make a jsdom query');
+      return null;
     }
 
     return this.prettifyData(data);
   }
 
-  public async getItems(): Promise<IItem[]> {
+  public async getItems(): Promise<IItem[] | null> {
     const promises: Promise<IItem[]>[] = [];
 
     for (const page of this.pages) {
@@ -48,8 +53,8 @@ export class HtmlScraper implements IDataFetcher {
       console.log(`Total valid items: ${items.length}`);
       return items;
     } catch (e) {
-      console.log(`Error while trying to get items`);
-      throw e;
+      console.log(`Error while trying to get items:\n${e}`);
+      return null;
     }
   }
 
@@ -76,21 +81,18 @@ export class HtmlScraper implements IDataFetcher {
 
       if (!(otherProps && demandAndRarity)) return;
 
-      const item = { ...otherProps, ...demandAndRarity };
+      const item = { ...otherProps, ...demandAndRarity, type: page };
 
       if (isIItem(item)) {
         result.push(item);
       }
     });
 
-    console.log(`Total on ${page}: ${items.length}`);
-    console.log(`Valid on ${page}: ${result.length}`);
-
     return result;
   }
 
-  private getOtherProps(elem: Element): DefaultObject | null {
-    const result: DefaultObject = {};
+  private getOtherProps(elem: Element): Record<string, string> | null {
+    const result: Record<string, string> = {};
     const matrixOfItems: string[][] = elem
       .textContent!.split('\n')
       .map((x) => x.trim())
@@ -104,7 +106,17 @@ export class HtmlScraper implements IDataFetcher {
       }
 
       if (potentialItem[0].toLowerCase() == 'ranged value') {
-        result['ranged value'] = `${potentialItem[1]} - ${potentialItem[2]}`;
+        if (potentialItem.length == 3) {
+          result['rangedValue'] = `${potentialItem[1]} - ${potentialItem[2]}`;
+        } else {
+          result['rangedValue'] = potentialItem[1];
+        }
+        return;
+      }
+
+      if (potentialItem[0].toLowerCase() == 'last change in value') {
+        result['lastChangeInValue'] = potentialItem[1].replace(/[()]/g, '');
+        return;
       }
 
       if (potentialItem.length == 3) return;
