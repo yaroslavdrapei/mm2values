@@ -1,6 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import { truncateSync } from 'node:fs';
 
 export default [
   { 
@@ -10,7 +11,8 @@ export default [
     languageOptions: { 
       globals: {
         ...globals.node, 
-        NodeJS: true
+        NodeJS: true,
+        Element: true
       },
     } 
   },

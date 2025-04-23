@@ -1,0 +1,10 @@
+{
+  "scraper": {
+    "frequencyInMinutes": 5
+  },
+  "bot": {
+    "frequencyInMinutes": 5,
+    "maxItemsDisplayed": 10,
+    "markdown": "HTML"
+  }
+}
