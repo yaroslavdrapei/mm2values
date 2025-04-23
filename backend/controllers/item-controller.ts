@@ -5,7 +5,8 @@ export class ItemController {
   public itemService = new ItemService();
 
   public getItems = async (req: Request, res: Response): Promise<void> => {
-    const items = await this.itemService.getItems();
+    const query = req.query as Record<string, string>;
+    const items = await this.itemService.getItems(query);
     res.status(200).json(items);
   };
 

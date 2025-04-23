@@ -2,8 +2,14 @@ import { Item } from '../schemas/item';
 import { IItem } from '../../shared/types/types';
 
 export class ItemService {
-  public getItems = async (): Promise<IItem[]> => {
-    return await Item.find();
+  public getItems = async (query: Record<string, string>): Promise<IItem[]> => {
+    const myQuery: Record<string, RegExp> = {};
+
+    if (query.name) myQuery.name = new RegExp(`^${query.name}$`, 'i');
+    if (query.type) myQuery.type = new RegExp(`^${query.type}$`, 'i');
+    if (query.origin) myQuery.origin = new RegExp(`^${query.origin}$`, 'i');
+
+    return await Item.find(myQuery);
   };
 
   public getItemById = async (id: string): Promise<IItem | null> => {
