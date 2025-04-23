@@ -3,8 +3,8 @@ dotenv.config();
 
 import express from 'express';
 import mongoose from 'mongoose';
-import { itemRouter } from './routes/item';
-import { subscriberRouter } from './routes/subscriber';
+import { itemRouter } from './routes/item-router';
+import { subscriberRouter } from './routes/subscriber-router';
 
 mongoose.connect(process.env.MONGO_URI!);
 
