@@ -65,6 +65,7 @@ export type BotConfig = {
   frequencyInMinutes: number;
   maxItemsDisplayed: number;
   markdown: MarkdownType;
+  commandsText: { [key: string]: string };
 };
 
 export type UpdateLog = {

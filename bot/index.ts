@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 import config from 'config';
 import TelegramBot from 'node-telegram-bot-api';
-import { Commands } from './commands';
 import { startCommand } from './commands/start';
 import { subscribeCommand } from './commands/subscribe';
 import { unsubscribeCommand } from './commands/unsubscribe';
@@ -23,7 +22,7 @@ const botConfig = config.get<BotConfig>('bot');
 
 const token = process.env.BOT_TOKEN!;
 const markdown = MarkdownFactory.create(botConfig.markdown);
-const commands = Commands.getCommands();
+const commands = botConfig.commandsText;
 const frequency = botConfig.frequencyInMinutes * 1000 * 60;
 const bot = new TelegramBot(token, { polling: true });
 
