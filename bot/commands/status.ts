@@ -1,13 +1,13 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { SimpleApiClient } from '../simple-api-client';
-import { ISubscriber } from '../../shared/types/types';
+import { IUser } from '../../shared/types/types';
 
 export const statusCommand = async (bot: TelegramBot, msg: Message): Promise<void> => {
   const chatId = msg.chat.id;
 
-  const subscriber = await SimpleApiClient.get<ISubscriber>(`/subscribers/${chatId}`);
+  const user = await SimpleApiClient.get<IUser>(`/users/${chatId}`);
 
-  if (subscriber) {
+  if (user?.subscribed) {
     bot.sendMessage(chatId, 'You are subscribed');
     return;
   }

@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isIItem(obj: any): obj is IItem {
   return (
@@ -31,9 +33,11 @@ export interface IItem {
   contains?: string;
 }
 
-export interface ISubscriber {
-  readonly chatId: number;
-  readonly username?: string;
+export interface IUser {
+  chatId: number;
+  username?: string;
+  subscribed: boolean;
+  items: (Types.ObjectId | IItem)[];
 }
 
 export interface ItemEntity extends IItem {
