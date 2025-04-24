@@ -4,7 +4,7 @@ dotenv.config();
 import express from 'express';
 import mongoose from 'mongoose';
 import { itemRouter } from './routes/item-router';
-import { subscriberRouter } from './routes/subscriber-router';
+import { userRouter } from './routes/user-router';
 
 mongoose.connect(process.env.MONGO_URI!);
 
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use('/items', itemRouter);
-app.use('/subscribers', subscriberRouter);
+app.use('/users', userRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

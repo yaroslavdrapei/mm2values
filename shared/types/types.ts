@@ -37,7 +37,6 @@ export interface IUser {
   chatId: number;
   username?: string;
   subscribed: boolean;
-  items: (Types.ObjectId | IItem)[];
 }
 
 export interface ItemEntity extends IItem {
