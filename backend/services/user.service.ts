@@ -1,4 +1,4 @@
-import { User } from '../schemas/user';
+import { User } from '../schemas/user.schema';
 import { IUser } from '../../shared/types/types';
 
 export class UserService {

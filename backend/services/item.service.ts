@@ -1,4 +1,4 @@
-import { Item } from '../schemas/item';
+import { Item } from '../schemas/item.schema';
 import { IItem } from '../../shared/types/types';
 import { escapeRegExp } from '../../shared/utils/utils';
 

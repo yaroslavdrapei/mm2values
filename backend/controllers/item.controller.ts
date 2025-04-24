@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ItemService } from '../services/item-service';
+import { ItemService } from '../services/item.service';
 
 export class ItemController {
   public itemService = new ItemService();
