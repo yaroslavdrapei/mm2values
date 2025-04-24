@@ -81,3 +81,8 @@ export interface IHtmlScraper {
   getChangeLog(): Promise<string | null>;
   getItems(): Promise<IItem[] | null>;
 }
+
+export interface IInventory {
+  owner: Types.ObjectId | IUser;
+  items: (Types.ObjectId | IItem)[];
+}
