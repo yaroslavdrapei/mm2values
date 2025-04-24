@@ -8,5 +8,6 @@ userRouter.get('/', userController.getAllUsers);
 userRouter.get('/:chatId', userController.getUser);
 userRouter.post('/', userController.createUser);
 userRouter.delete('/:chatId', userController.deleleUser);
+userRouter.patch('/:chatId', userController.patchUser);
 
 export { userRouter };

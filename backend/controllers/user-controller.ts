@@ -40,4 +40,16 @@ export class UserController {
       res.sendStatus(400);
     }
   };
+
+  public patchUser = async (req: Request, res: Response): Promise<void> => {
+    const chatId = parseInt(req.params.chatId);
+    const body = req.body;
+
+    try {
+      await this.userService.patchUser(chatId, body);
+      res.sendStatus(204);
+    } catch {
+      res.sendStatus(400);
+    }
+  };
 }

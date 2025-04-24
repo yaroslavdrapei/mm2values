@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema<IUser>({
     type: Number,
     required: true
   },
-  username: String
+  username: String,
+  subscribed: {
+    type: Boolean,
+    default: false
+  }
 });
 
 export const User = mongoose.model<IUser>('users', userSchema);
