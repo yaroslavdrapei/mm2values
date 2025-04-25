@@ -10,10 +10,29 @@ const inventorySchema = new mongoose.Schema<IInventory>({
   },
   items: [
     {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'items'
+      _id: false,
+      item: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'items'
+      },
+      quantity: {
+        type: Number,
+        default: 1
+      }
     }
-  ]
+  ],
+  currentValue: {
+    type: Number,
+    default: 0
+  },
+  lastValue: {
+    type: Number,
+    default: 0
+  },
+  latestChanges: {
+    type: Object,
+    default: {}
+  }
 });
 
-export const Inventory = mongoose.model<IInventory>('inventories', inventorySchema);
+export const Inventory = mongoose.model<MyIInventory>('inventories', inventorySchema);

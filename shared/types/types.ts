@@ -82,7 +82,26 @@ export interface IHtmlScraper {
   getItems(): Promise<IItem[] | null>;
 }
 
-export interface IInventory {
-  owner: Types.ObjectId | IUser;
-  items: (Types.ObjectId | IItem)[];
+interface IInventoryBase {
+  currentValue: number;
+  lastValue: number;
+  latestChanges: Report;
+}
+
+export type InventoryItem = {
+  item: Types.ObjectId;
+  quantity: number;
+};
+
+export interface IInventory extends IInventoryBase {
+  owner: Types.ObjectId;
+  items: InventoryItem[];
+}
+
+export interface IInventoryPopulated extends IInventoryBase {
+  owner: IUser;
+  items: {
+    item: IItem;
+    quantity: number;
+  }[];
 }

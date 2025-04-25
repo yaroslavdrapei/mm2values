@@ -5,6 +5,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { itemRouter } from './routes/item.router';
 import { userRouter } from './routes/user.router';
+import { inventoryRouter } from './routes/inventory.router';
 
 mongoose.connect(process.env.MONGO_URI!);
 
@@ -14,6 +15,7 @@ const app = express();
 app.use(express.json());
 app.use('/items', itemRouter);
 app.use('/users', userRouter);
+app.use('/inventory', inventoryRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
