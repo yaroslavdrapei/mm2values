@@ -8,6 +8,12 @@ import { queryBuilder } from '../../shared/utils/utils';
 export const addCommand = async (bot: TelegramBot, msg: Message, markdown: IMarkdown): Promise<void> => {
   const chatId = msg.chat.id;
 
+  const inventory = await createOrGetUserInventory(bot, msg);
+  if (!inventory) {
+    bot.sendMessage(chatId, "Internal problem; Couldn't get inventory");
+    return;
+  }
+
   const itemsToAdd = removeCommandFromMessage(msg.text!)
     .toLowerCase()
     .split(/[;,]/)
@@ -26,12 +32,6 @@ export const addCommand = async (bot: TelegramBot, msg: Message, markdown: IMark
     if (!name) {
       messageArr.push(`Invalid input for: ${name}`);
       continue;
-    }
-
-    const inventory = await createOrGetUserInventory(bot, msg);
-    if (!inventory) {
-      bot.sendMessage(chatId, "Internal problem; Couldn't get inventory");
-      return;
     }
 
     const query = queryBuilder(name, type, origin);
@@ -73,5 +73,7 @@ export const addCommand = async (bot: TelegramBot, msg: Message, markdown: IMark
     messageArr.push(`${capitalize(name)} (${quantity}) added successfully`);
   }
 
+  const values = await SimpleApiClient.get<{ currentValue: number }>(`/inventory/${inventory._id}/value`);
+  messageArr.push(`Total value: ${values ? values.currentValue : null}`);
   bot.sendMessage(chatId, messageArr.join('\n'), { parse_mode: markdown.type });
 };
