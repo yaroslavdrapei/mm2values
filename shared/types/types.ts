@@ -93,6 +93,11 @@ export type InventoryItem = {
   quantity: number;
 };
 
+export type InventoryItemPopulated = {
+  item: ItemEntity;
+  quantity: number;
+};
+
 export interface IInventory extends IInventoryBase {
   owner: Types.ObjectId;
   items: InventoryItem[];
@@ -101,7 +106,11 @@ export interface IInventory extends IInventoryBase {
 export interface IInventoryPopulated extends IInventoryBase {
   owner: IUser;
   items: {
-    item: IItem;
+    item: ItemEntity;
     quantity: number;
   }[];
+}
+
+export interface InventoryEntity extends IInventoryPopulated {
+  _id: string;
 }

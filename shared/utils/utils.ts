@@ -43,3 +43,18 @@ export const reportToUpdateLog = (report: Report, markdown: IMarkdown): string =
 
   return message.join('\n');
 };
+
+export const queryBuilder = (
+  name: string | undefined,
+  type: string | undefined,
+  origin: string | undefined
+): string => {
+  const query: string[] = ['?'];
+
+  if (name) query.push(`name=${name}&`);
+  if (type) query.push(`type=${type}&`);
+  if (origin) query.push(`origin=${origin}&`);
+
+  console.log(query);
+  return query.join('').slice(0, query.join('').length - 1);
+};
