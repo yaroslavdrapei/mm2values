@@ -20,6 +20,21 @@ export class InventoryController {
     }
   };
 
+  public getInventoryByChatId = async (req: Request, res: Response): Promise<void> => {
+    const chatId = req.query.chatId ? parseInt(req.query.chatId as string) : -1;
+    try {
+      const inventory = await this.inventoryService.getInventoryByChatId(chatId);
+      if (!inventory) {
+        res.sendStatus(404);
+        return;
+      }
+      res.status(200).json(inventory);
+    } catch (e) {
+      console.log(e);
+      res.sendStatus(400);
+    }
+  };
+
   public getInventoryValue = async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id;
     try {

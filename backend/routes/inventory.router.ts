@@ -4,6 +4,7 @@ import { InventoryController } from '../controllers/inventory.controller';
 const inventoryRouter = Router();
 const inventoryController = new InventoryController();
 
+inventoryRouter.get('/', inventoryController.getInventoryByChatId);
 inventoryRouter.get('/:id', inventoryController.getInventoryById);
 inventoryRouter.get('/:id/value', inventoryController.getInventoryValue);
 inventoryRouter.post('/recalculate', inventoryController.recalculateValue);

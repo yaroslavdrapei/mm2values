@@ -1,7 +1,7 @@
 import { IInventory, IInventoryPopulated, InventoryItem } from '../../shared/types/types';
 import { Inventory } from '../schemas/inventory.schema';
-import { User } from '../schemas/user.schema';
 import { Item } from '../schemas/item.schema';
+import { User } from '../schemas/user.schema';
 import { Types } from 'mongoose';
 
 export class InventoryService {
@@ -9,6 +9,15 @@ export class InventoryService {
     const inventory = await Inventory.findOne({ _id: id }).populate('items.item').populate('owner');
     if (!inventory) return null;
     return inventory;
+  }
+
+  public async getInventoryByChatId(chatId: number): Promise<IInventory | null> {
+    const user = await User.findOne({ chatId });
+    if (!user) {
+      return null;
+    }
+
+    return await Inventory.findOne({ owner: user._id }).populate('items.item').populate('owner');
   }
 
   public async getInventoryValue(id: string): Promise<Partial<IInventory> | null> {
