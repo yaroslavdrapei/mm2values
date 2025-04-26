@@ -60,8 +60,8 @@ export const removeCommand = async (bot: TelegramBot, msg: Message, markdown: IM
     const item = inventory.items.find((item) => item.item._id == itemId);
 
     if (!item) {
-      bot.sendMessage(chatId, "You don't have this item in your inventory");
-      return;
+      messageArr.push(`You don't ${markdown.bold(name)} in your inventory`);
+      continue;
     }
 
     await SimpleApiClient.patch(`/inventory/${inventory._id}/items/${itemId}`, {
