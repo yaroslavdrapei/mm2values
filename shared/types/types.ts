@@ -114,3 +114,8 @@ export interface IInventoryPopulated extends IInventoryBase {
 export interface InventoryEntity extends IInventoryPopulated {
   _id: string;
 }
+
+export type TgItemRequest = {
+  quantity: number;
+  name: string;
+};

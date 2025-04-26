@@ -1,4 +1,4 @@
-import { IItem, IMarkdown, Report } from '../types/types';
+import { IItem, IMarkdown, Report, TgItemRequest } from '../types/types';
 
 export const escapeRegExp = (str: string): string => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -57,4 +57,20 @@ export const queryBuilder = (
 
   console.log(query);
   return query.join('').slice(0, query.join('').length - 1);
+};
+
+export const extractUserRequest = (request: string): TgItemRequest => {
+  const splitted = request.split(' ');
+
+  if (splitted.length == 1) {
+    return { quantity: 1, name: splitted[0] };
+  }
+
+  const quantity = parseInt(splitted[splitted.length - 1]);
+
+  if (isNaN(quantity)) {
+    return { quantity: 1, name: splitted.join(' ') };
+  }
+
+  return { quantity, name: splitted.slice(0, splitted.length - 1).join(' ') };
 };

@@ -1,5 +1,5 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
-import { removeCommandFromMessage } from '../../shared/utils/utils';
+import { extractUserRequest, removeCommandFromMessage } from '../../shared/utils/utils';
 import { SimpleApiClient } from '../simple-api-client';
 import { IMarkdown, ItemEntity } from '../../shared/types/types';
 import { queryBuilder } from '../../shared/utils/utils';
@@ -9,7 +9,7 @@ export const calcCommand = async (bot: TelegramBot, msg: Message, markdown: IMar
 
   const itemsToAdd = removeCommandFromMessage(msg.text!)
     .toLowerCase()
-    .split(';')
+    .split(/[;,]/)
     .map((x) => x.trim());
 
   let totalValue = 0;
@@ -19,18 +19,12 @@ export const calcCommand = async (bot: TelegramBot, msg: Message, markdown: IMar
   for (const i of itemsToAdd) {
     if (i == '') continue;
 
-    const text = i;
-    const [quantitySplit, ...itemParams] = text.split(' ');
-
-    const quantity = isNaN(parseInt(quantitySplit)) ? 1 : parseInt(quantitySplit);
-    const itemParamsSplitted = itemParams
-      .join(' ')
-      .split(':')
-      .map((x) => x.trim());
+    const { quantity, name: itemParams } = extractUserRequest(i);
+    const itemParamsSplitted = itemParams.split(':').map((x) => x.trim());
 
     const [name, type, origin] = itemParamsSplitted;
 
-    if (!name || !quantity) {
+    if (!name) {
       bot.sendMessage(chatId, `Invalid input for: ${name}`);
       return;
     }
