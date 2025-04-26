@@ -17,7 +17,7 @@ services:
       - mongo-data:/data/db
 
   backend:
-    image: backend-mm2:2.3.1
+    image: backend-mm2:2.3.2
     command: npx tsnd --respawn --transpile-only --watch backend backend/index.ts
     ports:
       - 5500:5500
@@ -32,7 +32,7 @@ services:
       - mongodb
 
   scraper: 
-    image: scraper-mm2:2.3.1
+    image: scraper-mm2:2.3.2
     command: npx tsnd --respawn --transpile-only --watch scraper scraper/index.ts
     volumes:
       - ../shared:/shared
@@ -45,7 +45,7 @@ services:
       - backend
   
   bot:
-    image: bot-mm2:2.3.1
+    image: bot-mm2:2.3.2
     command: npx tsnd --respawn --transpile-only --watch bot bot/index.ts
     volumes:
       - ../shared:/shared
