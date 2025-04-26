@@ -6,7 +6,6 @@ const isDevMode = process.env.DEV === 'true';
 
 export const unsubscribeCommand = async (bot: TelegramBot, msg: Message, text: string): Promise<void> => {
   const chatId = msg.chat.id;
-
   const user = await SimpleApiClient.get<IUser>(`/users/${chatId}`);
 
   if (user) {
@@ -16,7 +15,6 @@ export const unsubscribeCommand = async (bot: TelegramBot, msg: Message, text: s
     }
 
     await SimpleApiClient.patch(`/users/${chatId}`, { subscribed: false });
-
     bot.sendMessage(chatId, text);
 
     if (isDevMode) {

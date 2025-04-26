@@ -5,7 +5,7 @@ import { SimpleApiClient } from '../simple-api-client';
 export const subscribeCommand = async (bot: TelegramBot, msg: Message, text: string): Promise<void> => {
   const chatId = msg.chat.id;
   const username = msg.chat.username ?? 'Anonymous user';
-
+  
   const user = await SimpleApiClient.get<IUser>(`/users/${chatId}`);
 
   if (!user) {

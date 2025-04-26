@@ -19,7 +19,6 @@ export const notifier = async (bot: TelegramBot, markdown: IMarkdown, redis: Red
   }
 
   console.log('New data!!!', new Date().toString());
-
   const users = await SimpleApiClient.get<IUser[]>('/users');
 
   if (!users) return; // if list is null it means error, so report is still gonna be fresh
