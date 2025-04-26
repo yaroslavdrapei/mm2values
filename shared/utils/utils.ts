@@ -55,7 +55,6 @@ export const queryBuilder = (
   if (type) query.push(`type=${type}&`);
   if (origin) query.push(`origin=${origin}&`);
 
-  console.log(query);
   return query.join('').slice(0, query.join('').length - 1);
 };
 
