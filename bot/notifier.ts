@@ -1,5 +1,5 @@
 import { RedisClientType } from 'redis';
-import { IMarkdown, ISubscriber, UpdateLog } from '../shared/types/types';
+import { IMarkdown, IUser, UpdateLog } from '../shared/types/types';
 import { reportToUpdateLog } from '../shared/utils/utils';
 import { SimpleApiClient } from './simple-api-client';
 import TelegramBot from 'node-telegram-bot-api';
@@ -19,15 +19,15 @@ export const notifier = async (bot: TelegramBot, markdown: IMarkdown, redis: Red
   }
 
   console.log('New data!!!', new Date().toString());
+  const users = await SimpleApiClient.get<IUser[]>('/users');
 
-  const subscribers = await SimpleApiClient.get<ISubscriber[]>('/subscribers');
-
-  if (!subscribers) return; // if list is null it means error, so report is still gonna be fresh
+  if (!users) return; // if list is null it means error, so report is still gonna be fresh
 
   const message = reportToUpdateLog(updateLog.report, markdown);
 
-  subscribers.forEach((sub) => {
-    bot.sendMessage(sub.chatId, message, { parse_mode: markdown.type });
+  users.forEach((user) => {
+    if (!user.subscribed) return;
+    bot.sendMessage(user.chatId, message, { parse_mode: markdown.type });
   });
 
   updateLog.used = true;

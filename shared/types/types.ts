@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isIItem(obj: any): obj is IItem {
   return (
@@ -31,9 +33,10 @@ export interface IItem {
   contains?: string;
 }
 
-export interface ISubscriber {
-  readonly chatId: number;
-  readonly username?: string;
+export interface IUser {
+  chatId: number;
+  username?: string;
+  subscribed: boolean;
 }
 
 export interface ItemEntity extends IItem {
@@ -65,6 +68,7 @@ export type BotConfig = {
   frequencyInMinutes: number;
   maxItemsDisplayed: number;
   markdown: MarkdownType;
+  commandsText: { [key: string]: string };
 };
 
 export type UpdateLog = {
@@ -77,3 +81,41 @@ export interface IHtmlScraper {
   getChangeLog(): Promise<string | null>;
   getItems(): Promise<IItem[] | null>;
 }
+
+interface IInventoryBase {
+  currentValue: number;
+  lastValue: number;
+  latestChanges: Report;
+}
+
+export type InventoryItem = {
+  item: Types.ObjectId;
+  quantity: number;
+};
+
+export type InventoryItemPopulated = {
+  item: ItemEntity;
+  quantity: number;
+};
+
+export interface IInventory extends IInventoryBase {
+  owner: Types.ObjectId;
+  items: InventoryItem[];
+}
+
+export interface IInventoryPopulated extends IInventoryBase {
+  owner: IUser;
+  items: {
+    item: ItemEntity;
+    quantity: number;
+  }[];
+}
+
+export interface InventoryEntity extends IInventoryPopulated {
+  _id: string;
+}
+
+export type TgItemRequest = {
+  quantity: number;
+  name: string;
+};

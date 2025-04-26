@@ -70,5 +70,7 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
     await redis.set('report', JSON.stringify(updateLog));
   }
 
+  await axios.post(`${API_URL}/inventory/recalculate`);
+  
   refreshCache(redis, htmlScraper, newChangeLog);
 };
