@@ -8,4 +8,4 @@ COPY /backend /backend
 
 RUN npm i
 
-CMD ["npx", "ts-node", "backend/index.ts"]
+CMD ["npx", "ts-node", "--transpile-only", "backend/index.ts"]
