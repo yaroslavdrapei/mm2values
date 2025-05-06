@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+console.log(process.env.BACKEND_API_KEY);
+
 const client = axios.create({
   baseURL: process.env.API_URL,
-  timeout: 10000
+  timeout: 10000,
+  headers: {
+    authorization: process.env.BACKEND_API_KEY!
+  }
 });
 
 const displayError = (err: any): void => {

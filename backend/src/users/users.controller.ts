@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from '@shared/dtos/users/create-user.dto';
 import { UpdateUserDto } from '@shared/dtos/users/update-user.dto';
@@ -6,8 +6,10 @@ import { Serialize } from '@shared/interceptors/serialize.interceptor';
 import { UserDto } from '@shared/dtos/users/user.dto';
 import { GetUserDto } from '@shared/dtos/users/get-user.dto';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { ApikeyGuard } from '@shared/guards/apikey.guard';
 
 @Serialize(UserDto)
+@UseGuards(ApikeyGuard)
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
