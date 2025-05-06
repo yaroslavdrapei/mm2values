@@ -17,14 +17,12 @@ services:
       - mongo-data:/data/db
 
   backend:
-    image: backend-mm2:2.3.2
-    command: npx tsnd --respawn --transpile-only --watch backend backend/index.ts
+    image: backend-mm2:3.0.0
+    command: npm run start:dev
     ports:
       - 5500:5500
     volumes:
-      - ../shared:/shared
-      - ../config:/config
-      - ../backend:/backend
+      - ../backend:/app
     env_file:
       - ../.env.dev
     depends_on:
@@ -32,12 +30,10 @@ services:
       - mongodb
 
   scraper: 
-    image: scraper-mm2:2.3.2
-    command: npx tsnd --respawn --transpile-only --watch scraper scraper/index.ts
+    image: scraper-mm2:3.0.0
+    command: npx tsx watch src/index.ts
     volumes:
-      - ../shared:/shared
-      - ../config:/config
-      - ../scraper:/scraper
+      - ../scraper:/app
     env_file:
       - ../.env.dev
     depends_on:
@@ -45,12 +41,10 @@ services:
       - backend
   
   bot:
-    image: bot-mm2:2.3.2
-    command: npx tsnd --respawn --transpile-only --watch bot bot/index.ts
+    image: bot-mm2:3.0.0
+    command: npx tsx watch src/index.ts
     volumes:
-      - ../shared:/shared
-      - ../config:/config
-      - ../bot:/bot
+      - ../bot:/app
     env_file:
       - ../.env.dev
     depends_on:

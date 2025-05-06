@@ -1,11 +1,8 @@
 FROM node:slim
 
-COPY package.json /
-COPY tsconfig.json /
-COPY /config /config
-COPY /shared /shared
-COPY /bot /bot
+COPY /bot /app
+WORKDIR app
 
 RUN npm i
 
-CMD ["npx", "ts-node", "bot/index.ts"]
+CMD ["npx", "tsx", "src/index.ts"]

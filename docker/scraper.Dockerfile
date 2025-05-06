@@ -1,11 +1,8 @@
 FROM node:slim
 
-COPY package.json /
-COPY tsconfig.json /
-COPY /config /config
-COPY /shared /shared
-COPY /scraper /scraper
+COPY /scraper /app
+WORKDIR app
 
 RUN npm i
 
-CMD ["npx", "ts-node", "scraper/index.ts"]
+CMD ["npx", "tsx", "src/index.ts"]

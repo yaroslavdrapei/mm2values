@@ -1,11 +1,9 @@
 FROM node:slim
 
-COPY package.json /
-COPY tsconfig.json /
-COPY /config /config
-COPY /shared /shared
-COPY /backend /backend
+COPY /backend /app
+WORKDIR app
 
 RUN npm i
+RUN npm run build
 
-CMD ["npx", "ts-node", "--transpile-only", "backend/index.ts"]
+CMD ["npm", "run", "start:prod"]
