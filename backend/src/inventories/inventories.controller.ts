@@ -17,7 +17,7 @@ import { Serialize } from '@shared/interceptors/serialize.interceptor';
 import { InventoryDto } from '@shared/dtos/inventories/inventory.dto';
 import { AddItemDto } from '@shared/dtos/inventories/add-item.dto';
 import { ChangeQuantityDto } from '@shared/dtos/inventories/change-quantity.dto';
-import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { ParseObjectIdPipe } from '@shared/pipes/parse-object-id.pipe';
 import { ApikeyGuard } from '@shared/guards/apikey.guard';
 
 @Controller('inventories')

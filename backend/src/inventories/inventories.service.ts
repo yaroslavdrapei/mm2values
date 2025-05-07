@@ -4,7 +4,7 @@ import { AddItemDto } from '@shared/dtos/inventories/add-item.dto';
 import { ChangeQuantityDto } from '@shared/dtos/inventories/change-quantity.dto';
 import { CreateInventoryDto } from '@shared/dtos/inventories/create-inventory.dto';
 import { Inventory } from '@shared/schemas/inventory.schema';
-import { SubItem } from '@shared/schemas/subitem.schema';
+import { InventoryItem } from '@shared/schemas/inventory-item.schema';
 import { Model } from 'mongoose';
 import { ItemsService } from 'src/items/items.service';
 import { UsersService } from 'src/users/users.service';
@@ -18,15 +18,15 @@ export class InventoriesService {
   ) {}
 
   async findOne(id: string) {
-    return await this.inventoryModel.findOne({ _id: id }).populate<{ items: SubItem[] }>('items.item');
+    return await this.inventoryModel.findOne({ _id: id }).populate<{ items: InventoryItem[] }>('items.item');
   }
 
   async findAll() {
-    return await this.inventoryModel.find().populate<{ items: SubItem[] }>('items.item');
+    return await this.inventoryModel.find().populate<{ items: InventoryItem[] }>('items.item');
   }
 
   async findByUserId(userId: string) {
-    return await this.inventoryModel.findOne({ user: userId }).populate<{ items: SubItem[] }>('items.item');
+    return await this.inventoryModel.findOne({ user: userId }).populate<{ items: InventoryItem[] }>('items.item');
   }
 
   async create(createInventoryDto: CreateInventoryDto) {
@@ -51,12 +51,12 @@ export class InventoriesService {
     const inventory = await this.findOne(id);
     if (!inventory) return null;
 
-    const subItem: SubItem = {
+    const inventoryItem: InventoryItem = {
       item,
       quantity: quantity ?? 1
     };
 
-    inventory.items.push(subItem);
+    inventory.items.push(inventoryItem);
     this.calculateTotalValue(inventory);
 
     await inventory.save();
@@ -67,13 +67,13 @@ export class InventoriesService {
     const inventory = await this.findOne(id);
     if (!inventory) return null;
 
-    const subItem = inventory.items.find((x) => x.item._id.toString() == itemId);
-    if (!subItem) return null;
+    const inventoryItem = inventory.items.find((x) => x.item._id.toString() == itemId);
+    if (!inventoryItem) return null;
 
-    subItem.quantity = quantity;
+    inventoryItem.quantity = quantity;
 
-    if (subItem.quantity <= 0) {
-      this.removeItem(subItem, inventory);
+    if (inventoryItem.quantity <= 0) {
+      this.removeItem(inventoryItem, inventory);
     }
 
     this.calculateTotalValue(inventory);
@@ -105,7 +105,7 @@ export class InventoriesService {
     return inventory;
   }
 
-  private removeItem(item: SubItem, inventory: Inventory): void {
+  private removeItem(item: InventoryItem, inventory: Inventory): void {
     const index = inventory.items.indexOf(item);
     inventory.items.splice(index, 1);
   }

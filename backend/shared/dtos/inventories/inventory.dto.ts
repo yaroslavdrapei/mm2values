@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { SubItemDto } from './subitem.dto';
+import { InventoryItem } from './inventory-item.dto';
 
 export class InventoryDto {
   @Expose()
@@ -10,8 +10,8 @@ export class InventoryDto {
   userId: string;
 
   @Expose()
-  @Type(() => SubItemDto)
-  items: SubItemDto[];
+  @Type(() => InventoryItem)
+  items: InventoryItem[];
 
   @Expose()
   currentValue: number;
