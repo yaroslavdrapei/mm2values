@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-console.log(process.env.BACKEND_API_KEY);
+import dotenv from 'dotenv';
+dotenv.config();
 
 const client = axios.create({
   baseURL: process.env.API_URL,
@@ -11,7 +11,7 @@ const client = axios.create({
 });
 
 const displayError = (err: any): void => {
-  console.log('Error:', err?.response.data);
+  console.log('Error:', err?.response?.data);
 };
 
 export class SimpleApiClient {
