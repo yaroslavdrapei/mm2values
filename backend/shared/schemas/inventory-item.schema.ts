@@ -6,7 +6,7 @@ export type InventoryItemDocument = HydratedDocument<InventoryItem>;
 
 const required = true;
 
-@Schema({ id: false })
+@Schema({ _id: false })
 export class InventoryItem {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item', required })
   item: ItemDocument;
