@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { isAxiosError, AxiosError } from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -6,12 +6,16 @@ const client = axios.create({
   baseURL: process.env.API_URL,
   timeout: 10000,
   headers: {
-    authorization: process.env.BACKEND_API_KEY!
+    authorization: process.env.BACKEND_API_KE!
   }
 });
 
 const displayError = (err: any): void => {
-  console.log('Error:', err?.response?.data);
+  if (isAxiosError(err)) {
+    console.log('Error:', (err as AxiosError).response?.data);
+    return;
+  }
+  console.log('Unexpected error:', err);
 };
 
 export class SimpleApiClient {
