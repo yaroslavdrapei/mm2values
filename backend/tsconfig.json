@@ -20,5 +20,6 @@
     "paths": {
       "@shared/*": [ "shared/*" ]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }
