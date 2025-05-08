@@ -2,11 +2,30 @@ import { RedisClientType } from 'redis';
 import { IHtmlScraper, Item, UpdateLog } from './types';
 import { ReportBuilder } from './report-builder';
 import axios from 'axios';
+import dotenv from 'dotenv';
 
-const API_URL = process.env.API_URL!;
+dotenv.config();
+
+const httpClient = axios.create({
+  baseURL: process.env.API_URL,
+  headers: {
+    authorization: process.env.BACKEND_API_KEY
+  }
+});
+
+const findChanges = (oldItem: Item, item: Item): Partial<Item> => {
+  const changes: Partial<Item> = {};
+
+  for (const key of Object.keys(item) as (keyof Item)[]) {
+    if (item[key] == oldItem[key]) continue;
+    changes[key] = item[key];
+  }
+
+  return changes;
+};
 
 const refreshCache = async (redis: RedisClientType, htmlScraper: IHtmlScraper, changeLog?: string): Promise<void> => {
-  const response = await axios.get(`${API_URL}/items`);
+  const response = await httpClient.get(`/items`);
   const items = response.data;
 
   const newChangeLog = changeLog ?? (await htmlScraper.getChangeLog()) ?? 'No data';
@@ -44,21 +63,23 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
   }
 
   const oldItems: Item[] = JSON.parse(oldItemsCache);
+  const excludedTypes = ['sets'];
 
   for (const item of newItems) {
     const oldItem = oldItems.find((x) => x.name == item.name && x.type == item.type && x.origin == item.origin);
 
     if (!oldItem) {
-      await axios.post(`${API_URL}/items`, item);
+      await httpClient.post(`/items`, item);
       continue;
     }
 
-    for (const key of Object.keys(item) as (keyof Item)[]) {
-      if (item[key] == oldItem[key]) continue;
+    const changes = findChanges(oldItem, item);
 
-      reportBuilder.addOrModifyRecord(item.name, key, oldItem[key], item[key]);
+    await httpClient.patch(`/items/${oldItem.id}`, changes);
 
-      await axios.patch(`${API_URL}/items/${oldItem.id}`, { [key]: item[key] });
+    for (const key of Object.keys(changes) as (keyof Item)[]) {
+      if (excludedTypes.includes(item.type)) continue;
+      reportBuilder.addOrModifyRecord(item.name, key, oldItem[key], changes[key]);
     }
   }
 
@@ -70,7 +91,7 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
     await redis.set('report', JSON.stringify(updateLog));
   }
 
-  await axios.post(`${API_URL}/inventories/recalculate`);
+  await httpClient.post(`/inventories/recalculate`);
 
   refreshCache(redis, htmlScraper, newChangeLog);
 };
