@@ -8,7 +8,8 @@ import {
   NotFoundException,
   BadRequestException,
   Patch,
-  Query
+  Query,
+  UseGuards
 } from '@nestjs/common';
 import { InventoriesService } from './inventories.service';
 import { CreateInventoryDto } from '@shared/dtos/inventories/create-inventory.dto';
@@ -16,7 +17,8 @@ import { Serialize } from '@shared/interceptors/serialize.interceptor';
 import { InventoryDto } from '@shared/dtos/inventories/inventory.dto';
 import { AddItemDto } from '@shared/dtos/inventories/add-item.dto';
 import { ChangeQuantityDto } from '@shared/dtos/inventories/change-quantity.dto';
-import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { ParseObjectIdPipe } from '@shared/pipes/parse-object-id.pipe';
+import { ApikeyGuard } from '@shared/guards/apikey.guard';
 
 @Controller('inventories')
 @Serialize(InventoryDto)
@@ -24,7 +26,7 @@ export class InventoriesController {
   constructor(private inventoriesService: InventoriesService) {}
 
   @Get()
-  async findByUserId(@Query('userId') userId: string) {
+  async findByUserId(@Query('userId', ParseObjectIdPipe) userId: string) {
     const inventory = await this.inventoriesService.findByUserId(userId);
     if (!inventory) {
       throw new NotFoundException(`Inventory with id ${userId} was not found`);
@@ -41,6 +43,7 @@ export class InventoriesController {
     return inventory;
   }
 
+  @UseGuards(ApikeyGuard)
   @Post()
   async create(@Body() body: CreateInventoryDto) {
     const inventory = await this.inventoriesService.create(body);
@@ -50,6 +53,7 @@ export class InventoriesController {
     return inventory;
   }
 
+  @UseGuards(ApikeyGuard)
   @Delete('/:id')
   async delete(@Param('id', ParseObjectIdPipe) id: string) {
     const inventory = await this.inventoriesService.delete(id);
@@ -59,11 +63,13 @@ export class InventoriesController {
     return inventory;
   }
 
+  @UseGuards(ApikeyGuard)
   @Post('/recalculate')
   async recalculateValuesOfAllInventories() {
     await this.inventoriesService.recalculateValue();
   }
 
+  @UseGuards(ApikeyGuard)
   @Post('/:id/items')
   async addItemToInventory(@Param('id', ParseObjectIdPipe) inventoryId: string, @Body() body: AddItemDto) {
     const inventory = await this.inventoriesService.addItem(inventoryId, body);
@@ -73,6 +79,7 @@ export class InventoriesController {
     return inventory;
   }
 
+  @UseGuards(ApikeyGuard)
   @Post('/:id/clear')
   async clearInventory(@Param('id', ParseObjectIdPipe) id: string) {
     const inventory = await this.inventoriesService.clear(id);
@@ -82,6 +89,7 @@ export class InventoriesController {
     return inventory;
   }
 
+  @UseGuards(ApikeyGuard)
   @Patch('/:id/items/:itemId')
   async changeItemQuantity(
     @Param('id', ParseObjectIdPipe) inventoryId: string,

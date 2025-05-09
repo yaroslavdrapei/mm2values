@@ -13,7 +13,8 @@ export function isItem(obj: any): obj is Item {
     (obj.rangedValue === undefined || typeof obj.rangedValue === 'string') &&
     (obj.lastChangeInValue === undefined || typeof obj.lastChangeInValue === 'string') &&
     (obj.class === undefined || typeof obj.class === 'string') &&
-    (obj.contains === undefined || typeof obj.contains === 'string')
+    (obj.contains === undefined || typeof obj.contains === 'string') &&
+    (obj.category === undefined || typeof obj.category === 'string')
   );
 }
 
@@ -30,9 +31,14 @@ export type Item = {
   lastChangeInValue?: string;
   class?: string;
   contains?: string;
+  category?: string;
 };
 
-export type Report = {
+export type Report = Partial<{
+  [type in ItemType]: ReportName;
+}>;
+
+export type ReportName = {
   [name: string]: ReportRecord;
 };
 
@@ -50,10 +56,23 @@ export type Config = {
 export type UpdateLog = {
   report: Report;
   createdAt: Date;
-  used: boolean;
 };
 
 export interface IHtmlScraper {
   getChangeLog(): Promise<string | null>;
   getItems(): Promise<Item[] | null>;
 }
+
+export type ItemType =
+  | 'misc'
+  | 'sets'
+  | 'pets'
+  | 'ancients'
+  | 'commons'
+  | 'legendaries'
+  | 'uniques'
+  | 'chromas'
+  | 'godlies'
+  | 'rares'
+  | 'uncommons'
+  | 'vintages';

@@ -2,12 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { ItemDocument } from './item.schema';
 
-export type SubItemDocument = HydratedDocument<SubItem>;
+export type InventoryItemDocument = HydratedDocument<InventoryItem>;
 
 const required = true;
 
-@Schema({ id: false })
-export class SubItem {
+@Schema({ _id: false })
+export class InventoryItem {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Item', required })
   item: ItemDocument;
 
@@ -15,4 +15,4 @@ export class SubItem {
   quantity: number;
 }
 
-export const SubItemSchema = SchemaFactory.createForClass(SubItem);
+export const InventoryItemSchema = SchemaFactory.createForClass(InventoryItem);

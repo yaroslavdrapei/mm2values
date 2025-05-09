@@ -4,6 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { InventoriesModule } from './inventories/inventories.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ApikeysModule } from './apikeys/apikeys.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -20,7 +22,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     ItemsModule,
     UsersModule,
-    InventoriesModule
+    InventoriesModule,
+    ApikeysModule,
+    ReportsModule
   ]
 })
 export class AppModule {}

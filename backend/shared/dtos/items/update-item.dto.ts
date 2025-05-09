@@ -50,4 +50,8 @@ export class UpdateItemDto {
   @IsString()
   @IsOptional()
   contains?: string;
+
+  @IsString()
+  @IsOptional()
+  category?: string;
 }

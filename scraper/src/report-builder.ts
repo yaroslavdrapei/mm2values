@@ -1,18 +1,24 @@
-import { Report, ReportRecord } from './types';
+import { ItemType, Report, ReportRecord } from './types';
 
 export class ReportBuilder {
   private report: Report = {};
 
   public constructor() {}
 
-  public addOrModifyRecord(name: string, property: string, oldValue?: string, newValue?: string): void {
+  public addOrModifyRecord(name: string, type: ItemType, property: string, oldValue?: string, newValue?: string): void {
     const newRecord: ReportRecord = { [property]: { old: oldValue ?? '', new: newValue ?? '' } };
 
-    if (name in this.report) {
-      this.report[name] = { ...this.report[name], ...newRecord };
-    } else {
-      this.report[name] = newRecord;
+    if (type in this.report) {
+      const category = this.report[type]!;
+      if (name in category) {
+        category[name] = { ...category[name], ...newRecord };
+      } else {
+        category[name] = newRecord;
+      }
+      return;
     }
+
+    this.report[type] = { [name]: newRecord };
   }
 
   public getReport(): Report {

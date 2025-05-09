@@ -13,21 +13,15 @@ export const notifier = async (bot: TelegramBot, markdown: IMarkdown, redis: Red
 
   const updateLog = JSON.parse(data) as UpdateLog;
 
-  if (updateLog.used) {
-    console.log('No new data', new Date().toString());
-    return;
-  }
-
   console.log('New data!!!', new Date().toString());
   const subscribers = await SimpleApiClient.get<User[]>('/users?subscribed=true');
   if (!subscribers) return; // if list is null it means error, so report is still gonna be fresh
 
-  const message = reportToUpdateLog(updateLog.report, markdown);
+  const message = reportToUpdateLog(updateLog, markdown);
 
   subscribers.forEach((sub) => {
     bot.sendMessage(sub.chatId, message, { parse_mode: markdown.type });
   });
 
-  updateLog.used = true;
-  await redis.set('report', JSON.stringify(updateLog));
+  await redis.del('report');
 };

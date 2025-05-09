@@ -1,17 +1,35 @@
 import { RedisClientType } from 'redis';
-import { IHtmlScraper, Item, UpdateLog } from './types';
+import { IHtmlScraper, Item, ItemType, UpdateLog } from './types';
 import { ReportBuilder } from './report-builder';
-import axios from 'axios';
+import got from 'got';
+import dotenv from 'dotenv';
 
-const API_URL = process.env.API_URL!;
+dotenv.config();
+
+const httpClient = got.extend({
+  prefixUrl: process.env.API_URL,
+  headers: {
+    authorization: process.env.BACKEND_API_KEY
+  },
+  retry: {
+    limit: 3,
+    calculateDelay: () => 3000
+  }
+});
+
+const findChanges = (oldItem: Item, item: Item): Partial<Item> => {
+  const changes: Partial<Item> = {};
+
+  for (const key of Object.keys(item) as (keyof Item)[]) {
+    if (item[key] == oldItem[key]) continue;
+    changes[key] = item[key];
+  }
+
+  return changes;
+};
 
 const refreshCache = async (redis: RedisClientType, htmlScraper: IHtmlScraper, changeLog?: string): Promise<void> => {
-  const response = await axios.get(`${API_URL}/items`);
-  const items = response.data;
-
   const newChangeLog = changeLog ?? (await htmlScraper.getChangeLog()) ?? 'No data';
-
-  await redis.set('items', JSON.stringify(items));
   await redis.set('data', newChangeLog);
 };
 
@@ -27,7 +45,7 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
   if (!newChangeLog) return;
 
   if (lastChangeLog == newChangeLog) {
-    console.log('Not updated;', new Date().toString());
+    console.log('Not updated;', new Date().toLocaleString('en-GB'));
     return;
   }
 
@@ -36,41 +54,37 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
 
   const reportBuilder = new ReportBuilder();
 
-  const oldItemsCache = await redis.get('items');
-
-  if (!oldItemsCache) {
-    refreshCache(redis, htmlScraper);
-    return;
-  }
-
-  const oldItems: Item[] = JSON.parse(oldItemsCache);
+  const oldItems: Item[] = await httpClient.get('items').json();
+  const excludedTypes = ['sets'];
 
   for (const item of newItems) {
     const oldItem = oldItems.find((x) => x.name == item.name && x.type == item.type && x.origin == item.origin);
 
     if (!oldItem) {
-      await axios.post(`${API_URL}/items`, item);
+      await httpClient.post(`items`, { json: item });
       continue;
     }
 
-    for (const key of Object.keys(item) as (keyof Item)[]) {
-      if (item[key] == oldItem[key]) continue;
+    const changes = findChanges(oldItem, item);
 
-      reportBuilder.addOrModifyRecord(item.name, key, oldItem[key], item[key]);
+    await httpClient.patch(`items/${oldItem.id}`, { json: changes });
 
-      await axios.patch(`${API_URL}/items/${oldItem.id}`, { [key]: item[key] });
+    for (const key of Object.keys(changes) as (keyof Item)[]) {
+      if (excludedTypes.includes(item.type)) continue;
+      reportBuilder.addOrModifyRecord(item.name, item.type as ItemType, key, oldItem[key], changes[key]);
     }
   }
 
   const report = reportBuilder.getReport();
-  console.log(report, '\n', new Date().toString());
+  console.log(report, '\n', new Date().toLocaleString('en-GB'));
 
   if (!reportBuilder.isEmpty()) {
-    const updateLog: UpdateLog = { report, createdAt: new Date(), used: false };
+    const updateLog: UpdateLog = { report, createdAt: new Date() };
     await redis.set('report', JSON.stringify(updateLog));
+    await httpClient.post('reports', { json: { report: JSON.stringify(updateLog.report) } });
   }
 
-  await axios.post(`${API_URL}/inventories/recalculate`);
+  await httpClient.post(`inventories/recalculate`);
 
   refreshCache(redis, htmlScraper, newChangeLog);
 };

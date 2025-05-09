@@ -1,4 +1,4 @@
-import { Item, IMarkdown, Report, TgItemRequest } from './types';
+import { Item, IMarkdown, TgItemRequest, UpdateLog, ItemType } from './types';
 
 export const escapeRegExp = (str: string): string => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,20 +26,25 @@ export const removeCommandFromMessage = (str: string): string => {
   return str.split(' ').slice(1).join(' ');
 };
 
-export const reportToUpdateLog = (report: Report, markdown: IMarkdown): string => {
-  const title = markdown.bold('Most recent update log:\n');
+export const reportToUpdateLog = ({ report, createdAt }: UpdateLog, markdown: IMarkdown): string => {
+  const title = markdown.bold(`Most recent update log (${new Date(createdAt).toLocaleDateString('en-GB')}):\n`);
   const message: string[] = [title];
 
-  for (const name of Object.keys(report) as (keyof Report)[]) {
-    const nameOfItem = markdown.bold(capitalize(name as string));
-    message.push(nameOfItem);
+  for (const type of Object.keys(report)) {
+    message.push(markdown.bold(`---------------- ${capitalize(type)} ----------------\n`));
 
-    const changes = report[name];
-    for (const [property, change] of Object.entries(changes)) {
-      message.push(`${capitalize(property)}: ${markdown.bold(change.old)} -> ${markdown.bold(change.new)}`);
+    const category = report[type as ItemType]!;
+    for (const name of Object.keys(category)) {
+      const nameOfItem = markdown.bold(capitalize(name as string));
+      message.push(nameOfItem);
+
+      const changes = category[name];
+      for (const [property, change] of Object.entries(changes)) {
+        message.push(`${capitalize(property)}: ${markdown.bold(change.old)} -> ${markdown.bold(change.new)}`);
+      }
+
+      message.push('');
     }
-
-    message.push('');
   }
 
   return message.join('\n');

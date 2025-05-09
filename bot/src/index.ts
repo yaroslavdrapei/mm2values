@@ -21,6 +21,7 @@ import { valueCommand } from './commands/value';
 import { profitCommand } from './commands/profit';
 import { calcCommand } from './commands/calc';
 import { clearCommand } from './commands/clear';
+import { setCategoryCommand } from './commands/set-category';
 
 const redisClient: RedisClientType = createClient({ url: process.env.REDIS_URL! });
 redisClient.connect();
@@ -36,7 +37,7 @@ const bot = new TelegramBot(token, { polling: true });
 bot.onText(/\/start/, (msg) => startCommand(bot, msg, commands.start));
 bot.onText(/\/subscribe/, (msg) => subscribeCommand(bot, msg, commands.subscribe));
 bot.onText(/\/unsubscribe/, (msg) => unsubscribeCommand(bot, msg, commands.unsubscribe));
-bot.onText(/\/log/, (msg) => logCommand(bot, msg, markdown, redisClient));
+bot.onText(/\/log/, (msg) => logCommand(bot, msg, markdown));
 bot.onText(/\/help/, (msg) => helpCommand(bot, msg, commands.help));
 bot.onText(/\/status/, (msg) => statusCommand(bot, msg));
 bot.onText(/\/info/, (msg) => infoCommand(bot, msg, markdown));
@@ -48,6 +49,9 @@ bot.onText(/\/value/, (msg) => valueCommand(bot, msg, markdown));
 bot.onText(/\/profit/, (msg) => profitCommand(bot, msg, markdown));
 bot.onText(/\/calc/, (msg) => calcCommand(bot, msg, markdown));
 bot.onText(/\/clear/, (msg) => clearCommand(bot, msg));
+
+// commands only for admins
+bot.onText(/\/set-category/, (msg) => setCategoryCommand(bot, msg, markdown));
 
 notifier(bot, markdown, redisClient);
 setInterval(() => notifier(bot, markdown, redisClient), frequency);

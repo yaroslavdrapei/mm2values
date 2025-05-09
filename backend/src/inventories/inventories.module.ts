@@ -6,6 +6,7 @@ import { Inventory, InventorySchema } from '@shared/schemas/inventory.schema';
 import { UsersModule } from 'src/users/users.module';
 import { ItemsModule } from 'src/items/items.module';
 import { Item, ItemSchema } from '@shared/schemas/item.schema';
+import { ApikeysModule } from 'src/apikeys/apikeys.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { Item, ItemSchema } from '@shared/schemas/item.schema';
       { name: Item.name, schema: ItemSchema }
     ]),
     UsersModule,
-    ItemsModule
+    ItemsModule,
+    ApikeysModule
   ],
   providers: [InventoriesService],
   controllers: [InventoriesController]

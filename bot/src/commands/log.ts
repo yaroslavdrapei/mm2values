@@ -1,24 +1,20 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
-import { RedisClientType } from 'redis';
-import { IMarkdown, UpdateLog } from '.././types';
+import { IMarkdown, Report, ReportDto } from '.././types';
 import { reportToUpdateLog } from '.././utils';
+import { SimpleApiClient } from '../simple-api-client';
 
-export const logCommand = async (
-  bot: TelegramBot,
-  msg: Message,
-  markdown: IMarkdown,
-  redis: RedisClientType
-): Promise<void> => {
+export const logCommand = async (bot: TelegramBot, msg: Message, markdown: IMarkdown): Promise<void> => {
   const chatId = msg.chat.id;
-  const cache = await redis.get('report');
+  const reportDto = await SimpleApiClient.get<ReportDto>('/reports/latest');
 
-  if (!cache) {
+  if (!reportDto) {
     bot.sendMessage(chatId, 'No data');
     return;
   }
 
-  const updateLog = JSON.parse(cache) as UpdateLog;
+  const report = JSON.parse(reportDto?.report) as Report;
+  const createdAt = new Date(reportDto.createdAt);
 
-  const message = reportToUpdateLog(updateLog.report, markdown);
+  const message = reportToUpdateLog({ report, createdAt }, markdown);
   bot.sendMessage(chatId, message, { parse_mode: markdown.type });
 };
