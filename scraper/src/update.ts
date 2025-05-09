@@ -29,11 +29,7 @@ const findChanges = (oldItem: Item, item: Item): Partial<Item> => {
 };
 
 const refreshCache = async (redis: RedisClientType, htmlScraper: IHtmlScraper, changeLog?: string): Promise<void> => {
-  const items = await httpClient.get(`items`).json();
-
   const newChangeLog = changeLog ?? (await htmlScraper.getChangeLog()) ?? 'No data';
-
-  await redis.set('items', JSON.stringify(items));
   await redis.set('data', newChangeLog);
 };
 
@@ -58,14 +54,7 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
 
   const reportBuilder = new ReportBuilder();
 
-  const oldItemsCache = await redis.get('items');
-
-  if (!oldItemsCache) {
-    refreshCache(redis, htmlScraper);
-    return;
-  }
-
-  const oldItems: Item[] = JSON.parse(oldItemsCache);
+  const oldItems: Item[] = await httpClient.get('items').json();
   const excludedTypes = ['sets'];
 
   for (const item of newItems) {
