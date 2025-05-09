@@ -32,7 +32,11 @@ export type Item = {
   contains?: string;
 };
 
-export type Report = {
+export type Report = Partial<{
+  [type in ItemType]: ReportName;
+}>;
+
+export type ReportName = {
   [name: string]: ReportRecord;
 };
 
@@ -56,3 +60,17 @@ export interface IHtmlScraper {
   getChangeLog(): Promise<string | null>;
   getItems(): Promise<Item[] | null>;
 }
+
+export type ItemType =
+  | 'misc'
+  | 'sets'
+  | 'pets'
+  | 'ancients'
+  | 'commons'
+  | 'legendaries'
+  | 'uniques'
+  | 'chromas'
+  | 'godlies'
+  | 'rares'
+  | 'uncommons'
+  | 'vintages';

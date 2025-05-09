@@ -1,15 +1,19 @@
 import { RedisClientType } from 'redis';
-import { IHtmlScraper, Item, UpdateLog } from './types';
+import { IHtmlScraper, Item, ItemType, UpdateLog } from './types';
 import { ReportBuilder } from './report-builder';
-import axios from 'axios';
+import got from 'got';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const httpClient = axios.create({
-  baseURL: process.env.API_URL,
+const httpClient = got.extend({
+  prefixUrl: process.env.API_URL,
   headers: {
     authorization: process.env.BACKEND_API_KEY
+  },
+  retry: {
+    limit: 3,
+    calculateDelay: () => 3000
   }
 });
 
@@ -25,8 +29,7 @@ const findChanges = (oldItem: Item, item: Item): Partial<Item> => {
 };
 
 const refreshCache = async (redis: RedisClientType, htmlScraper: IHtmlScraper, changeLog?: string): Promise<void> => {
-  const response = await httpClient.get(`/items`);
-  const items = response.data;
+  const items = await httpClient.get(`items`).json();
 
   const newChangeLog = changeLog ?? (await htmlScraper.getChangeLog()) ?? 'No data';
 
@@ -69,17 +72,17 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
     const oldItem = oldItems.find((x) => x.name == item.name && x.type == item.type && x.origin == item.origin);
 
     if (!oldItem) {
-      await httpClient.post(`/items`, item);
+      await httpClient.post(`items`, { json: item });
       continue;
     }
 
     const changes = findChanges(oldItem, item);
 
-    await httpClient.patch(`/items/${oldItem.id}`, changes);
+    await httpClient.patch(`items/${oldItem.id}`, { json: changes });
 
     for (const key of Object.keys(changes) as (keyof Item)[]) {
       if (excludedTypes.includes(item.type)) continue;
-      reportBuilder.addOrModifyRecord(item.name, key, oldItem[key], changes[key]);
+      reportBuilder.addOrModifyRecord(item.name, item.type as ItemType, key, oldItem[key], changes[key]);
     }
   }
 
@@ -89,10 +92,10 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
   if (!reportBuilder.isEmpty()) {
     const updateLog: UpdateLog = { report, createdAt: new Date() };
     await redis.set('report', JSON.stringify(updateLog));
-    await httpClient.post('/reports', { report: JSON.stringify(updateLog.report) });
+    await httpClient.post('reports', { json: { report: JSON.stringify(updateLog.report) } });
   }
 
-  await httpClient.post(`/inventories/recalculate`);
+  await httpClient.post(`inventories/recalculate`);
 
   refreshCache(redis, htmlScraper, newChangeLog);
 };

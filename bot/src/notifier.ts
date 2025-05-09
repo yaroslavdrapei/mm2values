@@ -1,5 +1,5 @@
 import { RedisClientType } from 'redis';
-import { IMarkdown, User, ReportDto } from './types';
+import { IMarkdown, User, UpdateLog } from './types';
 import { reportToUpdateLog } from './utils';
 import { SimpleApiClient } from './simple-api-client';
 import TelegramBot from 'node-telegram-bot-api';
@@ -11,7 +11,7 @@ export const notifier = async (bot: TelegramBot, markdown: IMarkdown, redis: Red
     return;
   }
 
-  const updateLog = JSON.parse(data) as ReportDto;
+  const updateLog = JSON.parse(data) as UpdateLog;
 
   console.log('New data!!!', new Date().toString());
   const subscribers = await SimpleApiClient.get<User[]>('/users?subscribed=true');

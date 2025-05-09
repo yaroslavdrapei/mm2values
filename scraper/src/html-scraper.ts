@@ -1,22 +1,10 @@
 import { JSDOM } from 'jsdom';
 import { IHtmlScraper, Item, isItem } from './types';
+import { ITEM_TYPES } from './constants';
 export class HtmlScraper implements IHtmlScraper {
   private baseUrl: string = process.env.BASE_URL!;
   public itemCount: number = 0; // just statistics
-  private pages: string[] = [
-    'misc',
-    'sets',
-    'uniques',
-    'pets',
-    'ancients',
-    'vintages',
-    'chromas',
-    'godlies',
-    'legendaries',
-    'rares',
-    'uncommons',
-    'commons'
-  ];
+  private pages: string[] = ITEM_TYPES;
 
   public async getChangeLog(): Promise<string | null> {
     let html: string;

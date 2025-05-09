@@ -14,6 +14,7 @@
     "axios": "^1.9.0",
     "config": "^3.3.12",
     "dotenv": "^16.5.0",
+    "got": "^14.4.7",
     "jsdom": "^26.1.0",
     "redis": "^5.0.0",
     "tsx": "^4.19.4"
@@ -23,6 +24,7 @@
     "@types/axios": "^0.9.36",
     "@types/config": "^3.3.5",
     "@types/dotenv": "^6.1.1",
+    "@types/got": "^9.6.12",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.15.3",
     "@types/redis": "^4.0.10",

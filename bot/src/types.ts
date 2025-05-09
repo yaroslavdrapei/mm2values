@@ -41,7 +41,11 @@ export type ReportDto = {
 
 // ----------------------------- Other -----------------------------
 
-export type Report = {
+export type Report = Partial<{
+  [type in ItemType]: ReportName;
+}>;
+
+export type ReportName = {
   [name: string]: ReportRecord;
 };
 
@@ -51,6 +55,20 @@ export type ReportRecord = {
     new: string;
   };
 };
+
+export type ItemType =
+  | 'misc'
+  | 'sets'
+  | 'pets'
+  | 'ancients'
+  | 'commons'
+  | 'legendaries'
+  | 'uniques'
+  | 'chromas'
+  | 'godlies'
+  | 'rares'
+  | 'uncommons'
+  | 'vintages';
 
 export interface IMarkdown {
   type: MarkdownType;
@@ -72,7 +90,6 @@ export type Config = {
 export type UpdateLog = {
   report: Report;
   createdAt: Date;
-  used: boolean;
 };
 
 export type TgItemRequest = {
