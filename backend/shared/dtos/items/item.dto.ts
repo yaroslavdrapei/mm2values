@@ -36,4 +36,7 @@ export class ItemDto {
 
   @Expose()
   contains: string;
+
+  @Expose()
+  category: string;
 }

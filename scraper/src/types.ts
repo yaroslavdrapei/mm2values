@@ -13,7 +13,8 @@ export function isItem(obj: any): obj is Item {
     (obj.rangedValue === undefined || typeof obj.rangedValue === 'string') &&
     (obj.lastChangeInValue === undefined || typeof obj.lastChangeInValue === 'string') &&
     (obj.class === undefined || typeof obj.class === 'string') &&
-    (obj.contains === undefined || typeof obj.contains === 'string')
+    (obj.contains === undefined || typeof obj.contains === 'string') &&
+    (obj.category === undefined || typeof obj.category === 'string')
   );
 }
 
@@ -30,6 +31,7 @@ export type Item = {
   lastChangeInValue?: string;
   class?: string;
   contains?: string;
+  category?: string;
 };
 
 export type Report = Partial<{

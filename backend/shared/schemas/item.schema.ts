@@ -39,6 +39,9 @@ export class Item {
 
   @Prop()
   contains: string;
+
+  @Prop()
+  category: string;
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

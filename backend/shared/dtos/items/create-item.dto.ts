@@ -44,4 +44,8 @@ export class CreateItemDto {
   @IsString()
   @IsOptional()
   contains: string;
+
+  @IsString()
+  @IsOptional()
+  category: string;
 }

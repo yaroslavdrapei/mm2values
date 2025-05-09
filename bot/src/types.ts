@@ -12,6 +12,7 @@ export type Item = {
   lastChangeInValue?: string;
   class?: string;
   contains?: string;
+  category?: string;
 };
 
 export type User = {
