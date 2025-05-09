@@ -46,7 +46,7 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
   if (!newChangeLog) return;
 
   if (lastChangeLog == newChangeLog) {
-    console.log('Not updated;', new Date().toString());
+    console.log('Not updated;', new Date().toLocaleString('en-GB'));
     return;
   }
 
@@ -84,11 +84,12 @@ export const update = async (redis: RedisClientType, htmlScraper: IHtmlScraper):
   }
 
   const report = reportBuilder.getReport();
-  console.log(report, '\n', new Date().toString());
+  console.log(report, '\n', new Date().toLocaleString('en-GB'));
 
   if (!reportBuilder.isEmpty()) {
-    const updateLog: UpdateLog = { report, createdAt: new Date(), used: false };
+    const updateLog: UpdateLog = { report, createdAt: new Date() };
     await redis.set('report', JSON.stringify(updateLog));
+    await httpClient.post('/reports', { report: JSON.stringify(updateLog.report) });
   }
 
   await httpClient.post(`/inventories/recalculate`);

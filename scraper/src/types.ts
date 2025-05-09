@@ -50,7 +50,6 @@ export type Config = {
 export type UpdateLog = {
   report: Report;
   createdAt: Date;
-  used: boolean;
 };
 
 export interface IHtmlScraper {

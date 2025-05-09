@@ -34,6 +34,11 @@ export type Inventory = {
   lastValue: number;
 };
 
+export type ReportDto = {
+  report: string;
+  createdAt: string;
+};
+
 // ----------------------------- Other -----------------------------
 
 export type Report = {

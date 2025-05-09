@@ -1,4 +1,4 @@
-import { Item, IMarkdown, Report, TgItemRequest } from './types';
+import { Item, IMarkdown, Report, TgItemRequest, UpdateLog, ReportDto } from './types';
 
 export const escapeRegExp = (str: string): string => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,11 +26,14 @@ export const removeCommandFromMessage = (str: string): string => {
   return str.split(' ').slice(1).join(' ');
 };
 
-export const reportToUpdateLog = (report: Report, markdown: IMarkdown): string => {
-  const title = markdown.bold('Most recent update log:\n');
+export const reportToUpdateLog = (updateLog: ReportDto, markdown: IMarkdown): string => {
+  const { report: rawReport, createdAt: createdAtString } = updateLog;
+  const report = JSON.parse(rawReport) as Report;
+
+  const title = markdown.bold(`Most recent update log (${new Date(createdAtString).toLocaleDateString('en-GB')}):\n`);
   const message: string[] = [title];
 
-  for (const name of Object.keys(report) as (keyof Report)[]) {
+  for (const name of Object.keys(report)) {
     const nameOfItem = markdown.bold(capitalize(name as string));
     message.push(nameOfItem);
 

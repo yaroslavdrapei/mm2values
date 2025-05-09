@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { InventoriesModule } from './inventories/inventories.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ApikeysModule } from './apikeys/apikeys.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { ApikeysModule } from './apikeys/apikeys.module';
     ItemsModule,
     UsersModule,
     InventoriesModule,
-    ApikeysModule
+    ApikeysModule,
+    ReportsModule
   ]
 })
 export class AppModule {}
