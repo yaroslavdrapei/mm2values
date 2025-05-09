@@ -2,7 +2,7 @@ import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { createOrGetUserInventory } from '../createOrGetUserInventory';
 import { IMarkdown, InventoryItem } from '.././types';
 import { capitalize } from '.././utils';
-import { CATEGORIES } from '../constants';
+import { CATEGORIES, ITEM_TYPES } from '../constants';
 
 export const inventoryCommand = async (bot: TelegramBot, msg: Message, markdown: IMarkdown): Promise<void> => {
   const chatId = msg.chat.id;
@@ -37,19 +37,20 @@ const itemsToText = (category: string, markdown: IMarkdown, items: InventoryItem
   messageArr.push(markdown.bold(`\n----------- ${capitalize(category)} -----------`));
 
   items.sort((a, b) => {
-    const valueA = parseInt(a.item.value.replace(',', ''));
-    const valueB = parseInt(b.item.value.replace(',', ''));
+    const categoryA = ITEM_TYPES.indexOf(a.item.type);
+    const categoryB = ITEM_TYPES.indexOf(b.item.type);
 
-    if (isNaN(valueA)) return 1;
-    if (isNaN(valueB)) return -1;
+    if (categoryA != categoryB) {
+      return categoryA - categoryB;
+    }
 
-    return valueB - valueA;
+    return a.item.name.localeCompare(b.item.name);
   });
 
   items.forEach(({ item, quantity }) => {
-    const text = `${markdown.bold(item.name)} (${quantity}): ${capitalize(item.type)}, ${item.value}, ${
-      item.stability
-    }`;
+    const parsedValue = parseInt(item.value.replace(',', ''));
+    const value = isNaN(parsedValue) ? item.value : parsedValue * quantity;
+    const text = `${markdown.bold(item.name)} (${quantity}): ${capitalize(item.type)}, ${value}, ${item.stability}`;
     messageArr.push(text);
   });
 };
