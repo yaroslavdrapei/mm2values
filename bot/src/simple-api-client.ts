@@ -14,6 +14,7 @@ const client = got.extend({
 });
 
 const displayError = (err: unknown): void => {
+  console.log('dfjldfjkdfldjfkfj');
   if (err instanceof HTTPError) {
     console.log('Error:', err.code);
     return;
@@ -42,7 +43,7 @@ export class SimpleApiClient {
     endpoint = this.removeStartingSlash(endpoint);
     try {
       const response = await client.post(endpoint, { json: body, responseType: 'json' });
-      return response as V;
+      return response.body as V;
     } catch (e) {
       displayError(e);
       return null;
@@ -53,7 +54,7 @@ export class SimpleApiClient {
     endpoint = this.removeStartingSlash(endpoint);
     try {
       const response = await client.patch(endpoint, { json: body, responseType: 'json' });
-      return response as V;
+      return response.body as V;
     } catch (e) {
       displayError(e);
       return null;
@@ -64,7 +65,7 @@ export class SimpleApiClient {
     endpoint = this.removeStartingSlash(endpoint);
     try {
       const response = await client.delete(endpoint);
-      return response as T;
+      return response.body as T;
     } catch (e) {
       displayError(e);
       return null;

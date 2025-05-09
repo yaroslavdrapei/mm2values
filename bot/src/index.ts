@@ -21,6 +21,7 @@ import { valueCommand } from './commands/value';
 import { profitCommand } from './commands/profit';
 import { calcCommand } from './commands/calc';
 import { clearCommand } from './commands/clear';
+import { setCategoryCommand } from './commands/set-category';
 
 const redisClient: RedisClientType = createClient({ url: process.env.REDIS_URL! });
 redisClient.connect();
@@ -48,6 +49,9 @@ bot.onText(/\/value/, (msg) => valueCommand(bot, msg, markdown));
 bot.onText(/\/profit/, (msg) => profitCommand(bot, msg, markdown));
 bot.onText(/\/calc/, (msg) => calcCommand(bot, msg, markdown));
 bot.onText(/\/clear/, (msg) => clearCommand(bot, msg));
+
+// commands only for admins
+bot.onText(/\/set-category/, (msg) => setCategoryCommand(bot, msg, markdown));
 
 notifier(bot, markdown, redisClient);
 setInterval(() => notifier(bot, markdown, redisClient), frequency);

@@ -24,7 +24,9 @@ export const inventoryCommand = async (bot: TelegramBot, msg: Message, markdown:
     itemsToText(category, markdown, itemsFromCategory, messageArr);
   });
 
-  const itemsNoCategory = items.filter(({ item }) => item.category === '' || item.category === undefined);
+  const itemsNoCategory = items.filter(
+    ({ item }) => item.category === undefined || !CATEGORIES.includes(item.category)
+  );
   itemsToText('no category', markdown, itemsNoCategory, messageArr);
 
   bot.sendMessage(chatId, messageArr.join('\n'), { parse_mode: markdown.type });

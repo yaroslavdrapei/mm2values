@@ -22,7 +22,10 @@ export class ApikeysService {
   }
 
   async findKey(userId: string) {
-    return await this.apikeyModel.findOne({ user: userId });
+    const apikeys = await this.apikeyModel.find();
+    const apikey = apikeys.find((key) => key.user._id.toString() === userId);
+    return apikey;
+    // return await this.apikeyModel.findOne({ user: userId }); - this doesn't work for whatever reason
   }
 
   async createKey(userId: string) {
